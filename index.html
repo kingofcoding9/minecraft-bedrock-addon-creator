@@ -1,0 +1,3843 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+    <title>Omni-Science Game Studio - Minecraft Bedrock Creator Suite</title>
+    <meta name="description" content="Professional Minecraft Bedrock Edition addon development platform by Omni-Science Game Studio. Complete toolkit for entities, blocks, items, recipes, scripting, and more.">
+    <meta name="keywords" content="Minecraft Bedrock, addon development, entity builder, block creator, scripting, Omni-Science">
+    <meta name="author" content="king_of_coding">
+    
+    <!-- Open Graph tags -->
+    <meta property="og:title" content="Omni-Science Game Studio - Minecraft Bedrock Creator Suite">
+    <meta property="og:description" content="Professional Minecraft Bedrock Edition addon development platform by Omni-Science Game Studio.">
+    <meta property="og:type" content="website">
+    
+    <!-- Monaco Editor CDN -->
+    <link rel="stylesheet" data-name="vs/editor/editor.main" href="https://cdn.jsdelivr.net/npm/monaco-editor@0.44.0/min/vs/editor/editor.main.css">
+    
+    <!-- JSZip CDN for addon packaging -->
+    <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --background: hsl(222, 84%, 5%);
+            --foreground: hsl(210, 40%, 90%);
+            --card: hsl(222, 84%, 8%);
+            --card-foreground: hsl(210, 40%, 90%);
+            --popover: hsl(222, 84%, 8%);
+            --popover-foreground: hsl(210, 40%, 90%);
+            --primary: hsl(162, 88%, 40%);
+            --primary-foreground: hsl(222, 84%, 5%);
+            --secondary: hsl(214, 32%, 20%);
+            --secondary-foreground: hsl(210, 40%, 90%);
+            --muted: hsl(217, 32%, 15%);
+            --muted-foreground: hsl(215, 20%, 65%);
+            --accent: hsl(214, 82%, 60%);
+            --accent-foreground: hsl(210, 40%, 95%);
+            --destructive: hsl(0, 62%, 60%);
+            --destructive-foreground: hsl(210, 40%, 95%);
+            --border: hsl(217, 32%, 20%);
+            --input: hsl(217, 32%, 20%);
+            --ring: hsl(162, 88%, 40%);
+            --radius: 0.5rem;
+            --font-sans: 'Inter', sans-serif;
+            --font-mono: 'Fira Code', monospace;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: var(--font-sans);
+            background-color: var(--background);
+            color: var(--foreground);
+            line-height: 1.6;
+            overflow: hidden;
+        }
+        
+        /* Layout */
+        .main-layout {
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+        
+        .sidebar {
+            width: 256px;
+            background-color: var(--card);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            transition: width 0.3s ease;
+        }
+        
+        .sidebar.collapsed {
+            width: 64px;
+        }
+        
+        .sidebar-header {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background-color: var(--primary);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+        
+        .logo-text h1 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--foreground);
+        }
+        
+        .logo-text p {
+            font-size: 0.75rem;
+            color: var(--muted-foreground);
+        }
+        
+        .sidebar.collapsed .logo-text {
+            display: none;
+        }
+        
+        .toggle-btn {
+            background: none;
+            border: none;
+            color: var(--muted-foreground);
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 6px;
+            transition: background-color 0.2s;
+        }
+        
+        .toggle-btn:hover {
+            background-color: var(--secondary);
+        }
+        
+        .nav-section {
+            margin-bottom: 1rem;
+        }
+        
+        .nav-section-title {
+            padding: 0.75rem 1rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--muted-foreground);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: all 0.2s;
+            border-radius: 6px;
+            margin: 0 0.5rem;
+        }
+        
+        .nav-section-title:hover {
+            background-color: var(--secondary);
+            color: var(--foreground);
+        }
+        
+        .nav-section-badge {
+            background-color: var(--primary);
+            color: var(--primary-foreground);
+            font-size: 0.6rem;
+            padding: 0.125rem 0.375rem;
+            border-radius: 0.75rem;
+            font-weight: 600;
+            min-width: 1.25rem;
+            text-align: center;
+        }
+        
+        .nav-section-chevron {
+            transition: transform 0.2s;
+            font-size: 0.75rem;
+        }
+        
+        .nav-section.collapsed .nav-section-chevron {
+            transform: rotate(-90deg);
+        }
+        
+        .nav-section.collapsed .nav-items {
+            display: none;
+        }
+        
+        .sidebar.collapsed .nav-section-title {
+            display: none;
+        }
+        
+        .sidebar-nav {
+            flex: 1;
+            overflow-y: auto;
+            padding-bottom: 1rem;
+        }
+        
+        .nav-items {
+            list-style: none;
+        }
+        
+        .nav-item {
+            margin: 0 0.5rem;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+        
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem;
+            text-decoration: none;
+            color: var(--foreground);
+            transition: all 0.2s;
+            cursor: pointer;
+            min-height: 44px;
+        }
+        
+        .nav-link:hover {
+            background-color: var(--secondary);
+        }
+        
+        .nav-link.active {
+            background-color: var(--primary);
+            color: var(--primary-foreground);
+        }
+        
+        .nav-icon {
+            width: 20px;
+            flex-shrink: 0;
+            text-align: center;
+        }
+        
+        .sidebar.collapsed .nav-text {
+            display: none;
+        }
+        
+        .content-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+        }
+        
+        .header {
+            background-color: var(--card);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .header-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--foreground);
+        }
+        
+        .main-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1.5rem;
+        }
+        
+        /* Sections */
+        .section {
+            display: none;
+        }
+        
+        .section.active {
+            display: block;
+        }
+        
+        /* Cards */
+        .card {
+            background-color: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .card-header {
+            margin-bottom: 1rem;
+        }
+        
+        .card-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--foreground);
+            margin-bottom: 0.5rem;
+        }
+        
+        .card-description {
+            color: var(--muted-foreground);
+            font-size: 0.875rem;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        /* Forms */
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        
+        .form-label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--foreground);
+            margin-bottom: 0.5rem;
+        }
+        
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            padding: 0.75rem;
+            background-color: var(--input);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            color: var(--foreground);
+            font-size: 0.875rem;
+            transition: all 0.2s;
+        }
+        
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: var(--ring);
+            box-shadow: 0 0 0 2px rgba(4, 255, 161, 0.3);
+        }
+        
+        .form-textarea {
+            min-height: 100px;
+            resize: vertical;
+            font-family: var(--font-mono);
+        }
+        
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1rem;
+            border-radius: var(--radius);
+            font-size: 0.875rem;
+            font-weight: 500;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            min-height: 44px;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            color: var(--primary-foreground);
+        }
+        
+        .btn-primary:hover {
+            background-color: hsl(162, 88%, 35%);
+        }
+        
+        .btn-secondary {
+            background-color: var(--secondary);
+            color: var(--secondary-foreground);
+        }
+        
+        .btn-secondary:hover {
+            background-color: hsl(214, 32%, 25%);
+        }
+        
+        .btn-outline {
+            background-color: transparent;
+            color: var(--foreground);
+            border: 1px solid var(--border);
+        }
+        
+        .btn-outline:hover {
+            background-color: var(--secondary);
+        }
+        
+        .btn-sm {
+            padding: 0.5rem 0.75rem;
+            font-size: 0.75rem;
+        }
+        
+        /* Tabs */
+        .tabs {
+            margin-bottom: 1.5rem;
+        }
+        
+        .tab-list {
+            display: flex;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 1rem;
+            overflow-x: auto;
+        }
+        
+        .tab-button {
+            padding: 0.75rem 1rem;
+            background: none;
+            border: none;
+            color: var(--muted-foreground);
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+        
+        .tab-button.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+        
+        .tab-button:hover {
+            color: var(--foreground);
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        /* Monaco Editor Container */
+        .monaco-container {
+            height: 500px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            overflow: hidden;
+        }
+        
+        /* External Tools iframes */
+        .iframe-container {
+            height: 600px;
+            width: 100%;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            overflow: hidden;
+            position: relative;
+            background-color: var(--muted);
+        }
+        
+        .iframe-container iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        
+        .iframe-loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: var(--muted-foreground);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .spinner {
+            width: 32px;
+            height: 32px;
+            border: 3px solid var(--muted-foreground);
+            border-top: 3px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Component selector */
+        .component-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .component-card {
+            background-color: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .component-card:hover {
+            border-color: var(--primary);
+            background-color: var(--muted);
+        }
+        
+        .component-card.selected {
+            border-color: var(--primary);
+            background-color: var(--primary);
+            color: var(--primary-foreground);
+        }
+        
+        .component-name {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        
+        .component-description {
+            font-size: 0.875rem;
+            color: var(--muted-foreground);
+            margin-bottom: 0.5rem;
+        }
+        
+        .component-card.selected .component-description {
+            color: var(--primary-foreground);
+        }
+        
+        .component-tags {
+            display: flex;
+            gap: 0.25rem;
+            flex-wrap: wrap;
+        }
+        
+        .component-tag {
+            background-color: var(--secondary);
+            color: var(--secondary-foreground);
+            padding: 0.125rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.75rem;
+        }
+        
+        .component-card.selected .component-tag {
+            background-color: rgba(255, 255, 255, 0.2);
+            color: var(--primary-foreground);
+        }
+        
+        /* Documentation Styles */
+        .doc-search-container {
+            position: relative;
+            margin-bottom: 2rem;
+        }
+        
+        .doc-search {
+            width: 100%;
+            padding: 1rem 1rem 1rem 2.5rem;
+            background-color: var(--input);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            color: var(--foreground);
+            font-size: 0.875rem;
+            transition: all 0.2s;
+        }
+        
+        .doc-search:focus {
+            outline: none;
+            border-color: var(--ring);
+            box-shadow: 0 0 0 2px rgba(4, 255, 161, 0.3);
+        }
+        
+        .doc-search-icon {
+            position: absolute;
+            left: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--muted-foreground);
+            font-size: 1rem;
+        }
+        
+        .doc-stats {
+            display: flex;
+            gap: 2rem;
+            margin-bottom: 2rem;
+            padding: 1rem;
+            background-color: var(--muted);
+            border-radius: var(--radius);
+        }
+        
+        .doc-stat {
+            text-align: center;
+        }
+        
+        .doc-stat-number {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        
+        .doc-stat-label {
+            font-size: 0.75rem;
+            color: var(--muted-foreground);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        
+        .doc-section {
+            background-color: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            margin-bottom: 1rem;
+            overflow: hidden;
+            transition: all 0.2s;
+        }
+        
+        .doc-section:hover {
+            border-color: var(--primary);
+        }
+        
+        .doc-section-header {
+            padding: 1.25rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .doc-section-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex: 1;
+        }
+        
+        .doc-section-icon {
+            font-size: 1.5rem;
+        }
+        
+        .doc-section-content {
+            flex: 1;
+        }
+        
+        .doc-section-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--foreground);
+            margin-bottom: 0.25rem;
+        }
+        
+        .doc-section-desc {
+            color: var(--muted-foreground);
+            font-size: 0.875rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .doc-section-meta {
+            display: flex;
+            gap: 1rem;
+            font-size: 0.75rem;
+            color: var(--muted-foreground);
+        }
+        
+        .doc-section-meta span {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+        
+        .doc-section-body {
+            padding: 0 1.25rem 1.25rem;
+            border-top: 1px solid var(--border);
+            display: none;
+        }
+        
+        .doc-section.expanded .doc-section-body {
+            display: block;
+        }
+        
+        .doc-section-chevron {
+            transition: transform 0.2s;
+            color: var(--muted-foreground);
+        }
+        
+        .doc-section.expanded .doc-section-chevron {
+            transform: rotate(180deg);
+        }
+        
+        /* Utility Classes */
+        .hidden { display: none !important; }
+        .flex { display: flex; }
+        .items-center { align-items: center; }
+        .justify-between { justify-content: space-between; }
+        .gap-2 { gap: 0.5rem; }
+        .gap-4 { gap: 1rem; }
+        .mt-4 { margin-top: 1rem; }
+        .mb-4 { margin-bottom: 1rem; }
+        .text-sm { font-size: 0.875rem; }
+        .text-xs { font-size: 0.75rem; }
+        .font-mono { font-family: var(--font-mono); }
+        .text-muted { color: var(--muted-foreground); }
+        .text-success { color: var(--primary); }
+        .text-error { color: var(--destructive); }
+        
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                position: fixed;
+                top: 0;
+                left: 0;
+                height: 100vh;
+                z-index: 1000;
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+            
+            .sidebar.open {
+                transform: translateX(0);
+            }
+            
+            .sidebar-overlay {
+                position: fixed;
+                inset: 0;
+                background-color: rgba(0, 0, 0, 0.5);
+                z-index: 999;
+                display: none;
+            }
+            
+            .sidebar-overlay.open {
+                display: block;
+            }
+            
+            .main-content {
+                padding: 1rem;
+            }
+            
+            .component-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .iframe-container {
+                height: 400px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <div class="logo-icon">🎮</div>
+                    <div class="logo-text">
+                        <h1>Creator Suite</h1>
+                        <p>Minecraft Bedrock</p>
+                    </div>
+                </div>
+                <button class="toggle-btn" id="sidebarToggle">≡</button>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <!-- Getting Started Section -->
+                <div class="nav-section">
+                    <div class="nav-section-title">Getting Started</div>
+                    <ul class="nav-items">
+                        <li class="nav-item">
+                            <div class="nav-link active" data-section="welcome">
+                                <span class="nav-icon">🏠</span>
+                                <span class="nav-text">Welcome</span>
+                            </div>
+                        </li>
+                        <li class="nav-item">
+                            <div class="nav-link" data-section="tutorial">
+                                <span class="nav-icon">📚</span>
+                                <span class="nav-text">Interactive Tutorial</span>
+                            </div>
+                        </li>
+                        <li class="nav-item">
+                            <div class="nav-link" data-section="quick-start">
+                                <span class="nav-icon">⚡</span>
+                                <span class="nav-text">Quick Start</span>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                
+                <!-- Documentation Section -->
+                <div class="nav-section">
+                    <div class="nav-section-title" data-toggle="documentation">
+                        <span>Documentation</span>
+                        <div class="flex items-center gap-2">
+                            <span class="nav-section-badge">5</span>
+                            <span class="nav-section-chevron">▼</span>
+                        </div>
+                    </div>
+                    <ul class="nav-items">
+                        <li class="nav-item">
+                            <div class="nav-link" data-section="doc-core-concepts">
+                                <span class="nav-icon">📚</span>
+                                <span class="nav-text">Core Concepts</span>
+                            </div>
+                        </li>
+                        <li class="nav-item">
+                            <div class="nav-link" data-section="doc-entities">
+                                <span class="nav-icon">⚡</span>
+                                <span class="nav-text">Entities</span>
+                            </div>
+                        </li>
+                        <li class="nav-item">
+                            <div class="nav-link" data-section="doc-blocks">
+                                <span class="nav-icon">🧱</span>
+                                <span class="nav-text">Blocks</span>
+                            </div>
+                        </li>
+                        <li class="nav-item">
+                            <div class="nav-link" data-section="doc-items">
+                                <span class="nav-icon">🍎</span>
+                                <span class="nav-text">Items</span>
+                            </div>
+                        </li>
+                        <li class="nav-item">
+                            <div class="nav-link" data-section="doc-scripting">
+                                <span class="nav-icon">💻</span>
+                                <span class="nav-text">Scripting APIs</span>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                
+                <!-- Builders Section -->
+                <div class="nav-section">
+                    <div class="nav-section-title" data-toggle="builders">
+                        <span>Builders</span>
+                        <div class="flex items-center gap-2">
+                            <span class="nav-section-badge">8</span>
+                            <span class="nav-section-chevron">▼</span>
+                        </div>
+                    </div>
+                    <ul class="nav-items">
+                        <li class="nav-item">
+                            <div class="nav-link" data-section="builder-entity">
+                                <span class="nav-icon">⚡</span>
+                                <span class="nav-text">Entity Builder</span>
+                            </div>
+                        </li>
+                        <li class="nav-item">
+                            <div class="nav-link" data-section="builder-client-entity">
+                                <span class="nav-icon">⚡</span>
+                                <span class="nav-text">Client Entity</span>
+                            </div>
+                        </li>
+                        <li class="nav-item">
+                            <div class="nav-link" data-section="builder-block">
+                                <span class="nav-icon">🧱</span>
+                                <span class="nav-text">Block Builder</span>
+                            </div>
+                        </li>
+                        <li class="nav-item">
+                            <div class="nav-link" data-section="builder-item">
+                                <span class="nav-icon">🍎</span>
+                                <span class="nav-text">Item Builder</span>
+                            </div>
+                        </li>
+                        <li class="nav-item">
+                            <div class="nav-link" data-section="builder-recipe">
+                                <span class="nav-icon">🧩</span>
+                                <span class="nav-text">Recipe Builder</span>
+                            </div>
+                        </li>
+                        <li class="nav-item">
+                            <div class="nav-link" data-section="builder-loot-tables">
+                                <span class="nav-icon">💎</span>
+                                <span class="nav-text">Loot Tables</span>
+                            </div>
+                        </li>
+                        <li class="nav-item">
+                            <div class="nav-link" data-section="builder-biome">
+                                <span class="nav-icon">🌍</span>
+                                <span class="nav-text">Biome Builder</span>
+                            </div>
+                        </li>
+                        <li class="nav-item">
+                            <div class="nav-link" data-section="builder-spawn-rules">
+                                <span class="nav-icon">🎯</span>
+                                <span class="nav-text">Spawn Rules</span>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                
+                <!-- Tools Section -->
+                <div class="nav-section">
+                    <div class="nav-section-title" data-toggle="tools">
+                        <span>Tools</span>
+                        <div class="flex items-center gap-2">
+                            <span class="nav-section-badge">4</span>
+                            <span class="nav-section-chevron">▼</span>
+                        </div>
+                    </div>
+                    <ul class="nav-items">
+                        <li class="nav-item">
+                            <div class="nav-link" data-section="script-studio">
+                                <span class="nav-icon">💻</span>
+                                <span class="nav-text">Script Studio</span>
+                            </div>
+                        </li>
+                        <li class="nav-item">
+                            <div class="nav-link" data-section="addon-packager">
+                                <span class="nav-icon">📦</span>
+                                <span class="nav-text">Addon Packager</span>
+                            </div>
+                        </li>
+                        <li class="nav-item">
+                            <div class="nav-link" data-section="json-validator">
+                                <span class="nav-icon">✅</span>
+                                <span class="nav-text">JSON Validator</span>
+                            </div>
+                        </li>
+                        <li class="nav-item">
+                            <div class="nav-link" data-section="external-tools">
+                                <span class="nav-icon">🔗</span>
+                                <span class="nav-text">External Tools</span>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                
+                <!-- Community Section -->
+                <div class="nav-section">
+                    <div class="nav-section-title" data-toggle="community">
+                        <span>Community</span>
+                        <div class="flex items-center gap-2">
+                            <span class="nav-section-badge">2</span>
+                            <span class="nav-section-chevron">▼</span>
+                        </div>
+                    </div>
+                    <ul class="nav-items">
+                        <li class="nav-item">
+                            <div class="nav-link" data-section="community-hub">
+                                <span class="nav-icon">👥</span>
+                                <span class="nav-text">Community Hub</span>
+                            </div>
+                        </li>
+                        <li class="nav-item">
+                            <div class="nav-link" data-section="omni-science">
+                                <span class="nav-icon">⭐</span>
+                                <span class="nav-text">Omni-Science</span>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+        </aside>
+        
+        <!-- Sidebar Overlay for Mobile -->
+        <div class="sidebar-overlay" id="sidebarOverlay"></div>
+        
+        <!-- Main Content -->
+        <div class="content-area">
+            <header class="header">
+                <h1 class="header-title" id="headerTitle">Welcome</h1>
+                <div class="header-actions">
+                    <button class="btn btn-outline btn-sm" id="mobileMenuToggle">☰</button>
+                </div>
+            </header>
+            
+            <main class="main-content" id="mainContent">
+                <!-- Welcome Section -->
+                <div id="welcome-section" class="section active">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title">Welcome to Omni-Science Creator Suite</h2>
+                            <p class="card-description">Professional Minecraft Bedrock Edition addon development platform</p>
+                        </div>
+                        <div class="grid">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h3 class="card-title">🎯 Quick Start</h3>
+                                    <p class="card-description">Get started with your first addon in minutes</p>
+                                </div>
+                                <button class="btn btn-primary" data-section="tutorial">Start Tutorial</button>
+                            </div>
+                            <div class="card">
+                                <div class="card-header">
+                                    <h3 class="card-title">🚀 Entity Builder</h3>
+                                    <p class="card-description">Create custom entities with advanced behaviors</p>
+                                </div>
+                                <button class="btn btn-primary" data-section="builder-entity">Build Entity</button>
+                            </div>
+                            <div class="card">
+                                <div class="card-header">
+                                    <h3 class="card-title">💻 Script Studio</h3>
+                                    <p class="card-description">Advanced scripting with Monaco Editor and API autocomplete</p>
+                                </div>
+                                <button class="btn btn-primary" data-section="script-studio">Open Studio</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tutorial Section -->
+                <div id="tutorial-section" class="section">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title">Interactive Tutorial</h2>
+                            <p class="card-description">Learn Minecraft Bedrock addon development step by step</p>
+                        </div>
+                        <div class="grid">
+                            <div class="card">
+                                <h3 class="card-title">📝 Lesson 1: Your First Entity</h3>
+                                <p class="card-description">Create a simple custom mob with basic behaviors</p>
+                                <button class="btn btn-primary">Start Lesson</button>
+                            </div>
+                            <div class="card">
+                                <h3 class="card-title">🧱 Lesson 2: Custom Blocks</h3>
+                                <p class="card-description">Add new blocks to your world with custom properties</p>
+                                <button class="btn btn-primary">Start Lesson</button>
+                            </div>
+                            <div class="card">
+                                <h3 class="card-title">⚙️ Lesson 3: Scripting Basics</h3>
+                                <p class="card-description">Introduction to Minecraft scripting APIs</p>
+                                <button class="btn btn-primary">Start Lesson</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Start Section -->
+                <div id="quick-start-section" class="section">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title">Quick Start Guide</h2>
+                            <p class="card-description">Get up and running with addon development</p>
+                        </div>
+                        <div class="card">
+                            <h3 class="card-title">Step 1: Choose Your Project Type</h3>
+                            <div class="grid">
+                                <button class="btn btn-outline" data-section="builder-entity">Create Entity</button>
+                                <button class="btn btn-outline" data-section="builder-block">Create Block</button>
+                                <button class="btn btn-outline" data-section="builder-item">Create Item</button>
+                                <button class="btn btn-outline" data-section="script-studio">Write Script</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Entity Builder Section -->
+                <div id="builder-entity-section" class="section">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title">Entity Builder</h2>
+                            <p class="card-description">Create custom entities with advanced behaviors and properties</p>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Entity Identifier</label>
+                            <input type="text" class="form-input" id="entityId" placeholder="namespace:entity_name" value="mypack:custom_entity">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Display Name</label>
+                            <input type="text" class="form-input" id="entityName" placeholder="Custom Entity" value="Custom Entity">
+                        </div>
+                        
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">Select Components</h3>
+                                <p class="card-description">Choose the components for your entity</p>
+                            </div>
+                            <div class="component-grid" id="entityComponents">
+                                <!-- Components will be populated by JavaScript -->
+                            </div>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">Generated JSON</h3>
+                            </div>
+                            <textarea class="form-textarea" id="entityOutput" style="height: 300px;" readonly></textarea>
+                        </div>
+                        
+                        <button class="btn btn-primary" id="generateEntity">Generate Entity</button>
+                        <button class="btn btn-secondary" id="downloadEntity">Download Files</button>
+                    </div>
+                </div>
+
+                <!-- Block Builder Section -->
+                <div id="builder-block-section" class="section">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title">Block Builder</h2>
+                            <p class="card-description">Create custom blocks with unique properties</p>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Block Identifier</label>
+                            <input type="text" class="form-input" id="blockId" placeholder="namespace:block_name" value="mypack:custom_block">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Display Name</label>
+                            <input type="text" class="form-input" id="blockName" placeholder="Custom Block" value="Custom Block">
+                        </div>
+                        
+                        <div class="grid">
+                            <div class="form-group">
+                                <label class="form-label">Hardness</label>
+                                <input type="number" class="form-input" id="blockHardness" value="2.0" step="0.1">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Blast Resistance</label>
+                                <input type="number" class="form-input" id="blockResistance" value="10.0" step="0.1">
+                            </div>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">Generated JSON</h3>
+                            </div>
+                            <textarea class="form-textarea" id="blockOutput" style="height: 300px;" readonly></textarea>
+                        </div>
+                        
+                        <button class="btn btn-primary" id="generateBlock">Generate Block</button>
+                        <button class="btn btn-secondary" id="downloadBlock">Download Files</button>
+                    </div>
+                </div>
+
+                <!-- Item Builder Section -->
+                <div id="builder-item-section" class="section">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title">Item Builder</h2>
+                            <p class="card-description">Create custom items with special properties</p>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Item Identifier</label>
+                            <input type="text" class="form-input" id="itemId" placeholder="namespace:item_name" value="mypack:custom_item">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Display Name</label>
+                            <input type="text" class="form-input" id="itemName" placeholder="Custom Item" value="Custom Item">
+                        </div>
+                        
+                        <div class="grid">
+                            <div class="form-group">
+                                <label class="form-label">Max Stack Size</label>
+                                <input type="number" class="form-input" id="itemStack" value="64" min="1" max="64">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Durability</label>
+                                <input type="number" class="form-input" id="itemDurability" value="100" min="1">
+                            </div>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">Generated JSON</h3>
+                            </div>
+                            <textarea class="form-textarea" id="itemOutput" style="height: 300px;" readonly></textarea>
+                        </div>
+                        
+                        <button class="btn btn-primary" id="generateItem">Generate Item</button>
+                        <button class="btn btn-secondary" id="downloadItem">Download Files</button>
+                    </div>
+                </div>
+
+                <!-- Recipe Builder Section -->
+                <div id="builder-recipe-section" class="section">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title">Recipe Builder</h2>
+                            <p class="card-description">Create crafting recipes for your custom items</p>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Recipe Type</label>
+                            <select class="form-select" id="recipeType">
+                                <option value="shaped">Shaped Crafting</option>
+                                <option value="shapeless">Shapeless Crafting</option>
+                                <option value="furnace">Furnace</option>
+                                <option value="smithing">Smithing Table</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Result Item</label>
+                            <input type="text" class="form-input" id="recipeResult" placeholder="namespace:item_name" value="mypack:custom_item">
+                        </div>
+                        
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">Generated JSON</h3>
+                            </div>
+                            <textarea class="form-textarea" id="recipeOutput" style="height: 300px;" readonly></textarea>
+                        </div>
+                        
+                        <button class="btn btn-primary" id="generateRecipe">Generate Recipe</button>
+                        <button class="btn btn-secondary" id="downloadRecipe">Download Files</button>
+                    </div>
+                </div>
+
+                <!-- Script Studio Section -->
+                <div id="script-studio-section" class="section">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title">Script Studio</h2>
+                            <p class="card-description">Advanced scripting with Monaco Editor and API autocomplete</p>
+                        </div>
+                        
+                        <div class="tabs">
+                            <div class="tab-list">
+                                <button class="tab-button active" data-tab="main">main.js</button>
+                                <button class="tab-button" data-tab="manifest">manifest.json</button>
+                                <button class="tab-button" data-tab="new">+ New File</button>
+                            </div>
+                            
+                            <div class="tab-content active" id="tab-main">
+                                <div class="monaco-container" id="monacoEditor"></div>
+                            </div>
+                            
+                            <div class="tab-content" id="tab-manifest">
+                                <textarea class="form-textarea" id="manifestEditor" style="height: 400px;"></textarea>
+                            </div>
+                        </div>
+                        
+                        <div class="flex gap-2 mt-4">
+                            <button class="btn btn-primary" id="runScript">Run Script</button>
+                            <button class="btn btn-secondary" id="validateScript">Validate</button>
+                            <button class="btn btn-outline" id="downloadScript">Download</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Core Concepts Documentation Section -->
+                <div id="doc-core-concepts-section" class="section">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title">📚 Minecraft Bedrock Documentation</h2>
+                            <p class="card-description">The complete guide to Minecraft Bedrock addon development. Everything you need to create amazing addons from scratch.</p>
+                        </div>
+                        
+                        <div class="doc-search-container">
+                            <span class="doc-search-icon">🔍</span>
+                            <input type="text" class="doc-search" placeholder="Search all documentation..." id="docSearch">
+                        </div>
+                        
+                        <div class="doc-stats">
+                            <div class="doc-stat">
+                                <div class="doc-stat-number">10</div>
+                                <div class="doc-stat-label">Sections</div>
+                            </div>
+                            <div class="doc-stat">
+                                <div class="doc-stat-number">0</div>
+                                <div class="doc-stat-label">Bookmarked</div>
+                            </div>
+                        </div>
+                        
+                        <h3 class="card-title">📚 Documentation Sections</h3>
+                        
+                        <div class="doc-section" data-section="getting-started">
+                            <div class="doc-section-header">
+                                <div class="doc-section-info">
+                                    <div class="doc-section-icon">🚀</div>
+                                    <div class="doc-section-content">
+                                        <div class="doc-section-title">Getting Started</div>
+                                        <div class="doc-section-desc">Setup, first steps, and basic concepts for addon development</div>
+                                        <div class="doc-section-meta">
+                                            <span>• <strong>beginner</strong></span>
+                                            <span>⏱️ <strong>30 min</strong></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <span class="doc-section-chevron">▼</span>
+                            </div>
+                            <div class="doc-section-body">
+                                <p>Learn the fundamentals of Minecraft Bedrock addon development, including project structure, file formats, and development workflow.</p>
+                                <ul>
+                                    <li>Setting up your development environment</li>
+                                    <li>Understanding addon structure</li>
+                                    <li>Basic JSON syntax and file organization</li>
+                                    <li>Testing and debugging your addons</li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <div class="doc-section" data-section="entity-development">
+                            <div class="doc-section-header">
+                                <div class="doc-section-info">
+                                    <div class="doc-section-icon">⚡</div>
+                                    <div class="doc-section-content">
+                                        <div class="doc-section-title">Entity Development</div>
+                                        <div class="doc-section-desc">Creating custom entities, behaviors, and AI systems</div>
+                                        <div class="doc-section-meta">
+                                            <span>• <strong>intermediate</strong></span>
+                                            <span>⏱️ <strong>2 hours</strong></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <span class="doc-section-chevron">▼</span>
+                            </div>
+                            <div class="doc-section-body">
+                                <p>Deep dive into entity creation, including components, behaviors, and advanced AI systems.</p>
+                                <ul>
+                                    <li>Entity structure and components</li>
+                                    <li>Behavior trees and AI goals</li>
+                                    <li>Animation controllers and states</li>
+                                    <li>Custom entity interactions</li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <div class="doc-section" data-section="block-development">
+                            <div class="doc-section-header">
+                                <div class="doc-section-info">
+                                    <div class="doc-section-icon">🧱</div>
+                                    <div class="doc-section-content">
+                                        <div class="doc-section-title">Block Development</div>
+                                        <div class="doc-section-desc">Custom blocks, mechanics, and interactions</div>
+                                        <div class="doc-section-meta">
+                                            <span>• <strong>intermediate</strong></span>
+                                            <span>⏱️ <strong>1.5 hours</strong></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <span class="doc-section-chevron">▼</span>
+                            </div>
+                            <div class="doc-section-body">
+                                <p>Learn to create custom blocks with unique properties, textures, and behaviors.</p>
+                                <ul>
+                                    <li>Block components and properties</li>
+                                    <li>Custom block states and variants</li>
+                                    <li>Block event systems</li>
+                                    <li>Advanced block mechanics</li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <div class="doc-section" data-section="item-development">
+                            <div class="doc-section-header">
+                                <div class="doc-section-info">
+                                    <div class="doc-section-icon">🍎</div>
+                                    <div class="doc-section-content">
+                                        <div class="doc-section-title">Item Development</div>
+                                        <div class="doc-section-desc">Items, tools, armor, and special mechanics</div>
+                                        <div class="doc-section-meta">
+                                            <span>• <strong>intermediate</strong></span>
+                                            <span>⏱️ <strong>1.5 hours</strong></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <span class="doc-section-chevron">▼</span>
+                            </div>
+                            <div class="doc-section-body">
+                                <p>Create custom items including tools, weapons, armor, and special-use items.</p>
+                                <ul>
+                                    <li>Item components and durability</li>
+                                    <li>Custom tool behaviors</li>
+                                    <li>Armor and equipment systems</li>
+                                    <li>Food and consumable items</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- External Tools Section -->
+                <div id="external-tools-section" class="section">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title">External Development Tools</h2>
+                            <p class="card-description">Professional tools for advanced Minecraft Bedrock development</p>
+                        </div>
+                        
+                        <div class="tabs">
+                            <div class="tab-list">
+                                <button class="tab-button active" data-tab="blockbench">Blockbench</button>
+                                <button class="tab-button" data-tab="bridge-core">Bridge Core</button>
+                                <button class="tab-button" data-tab="snowstorm">Snowstorm</button>
+                                <button class="tab-button" data-tab="pixilart">Pixilart</button>
+                                <button class="tab-button" data-tab="dialogue-editor">Dialogue Editor</button>
+                                <button class="tab-button" data-tab="loot-table">Loot Table</button>
+                                <button class="tab-button" data-tab="structure-editor">Structure Editor</button>
+                            </div>
+                            
+                            <div class="tab-content active" id="tab-blockbench">
+                                <div class="card">
+                                    <h3 class="card-title">Blockbench - 3D Model Editor</h3>
+                                    <p class="card-description">Create entity models, block models, and animations</p>
+                                    <div class="iframe-container" id="blockbench-container">
+                                        <div class="iframe-loading">
+                                            <div class="spinner"></div>
+                                            <p>Loading Blockbench...</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="tab-content" id="tab-bridge-core">
+                                <div class="card">
+                                    <h3 class="card-title">Bridge Core - Addon IDE</h3>
+                                    <p class="card-description">Advanced addon development environment</p>
+                                    <div class="iframe-container" id="bridge-container">
+                                        <div class="iframe-loading">
+                                            <div class="spinner"></div>
+                                            <p>Loading Bridge Core...</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="tab-content" id="tab-snowstorm">
+                                <div class="card">
+                                    <h3 class="card-title">Snowstorm - Particle Editor</h3>
+                                    <p class="card-description">Create and edit particle effects</p>
+                                    <div class="iframe-container" id="snowstorm-container">
+                                        <div class="iframe-loading">
+                                            <div class="spinner"></div>
+                                            <p>Loading Snowstorm...</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="tab-content" id="tab-pixilart">
+                                <div class="card">
+                                    <h3 class="card-title">Pixilart - Pixel Art Editor</h3>
+                                    <p class="card-description">Create textures and pixel art</p>
+                                    <div class="iframe-container" id="pixilart-container">
+                                        <div class="iframe-loading">
+                                            <div class="spinner"></div>
+                                            <p>Loading Pixilart...</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="tab-content" id="tab-dialogue-editor">
+                                <div class="card">
+                                    <h3 class="card-title">Dialogue Editor</h3>
+                                    <p class="card-description">Create interactive NPC dialogues and conversation trees</p>
+                                    <div class="iframe-container" id="dialogue-container">
+                                        <div class="iframe-loading">
+                                            <div class="spinner"></div>
+                                            <p>Loading Dialogue Editor...</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="tab-content" id="tab-loot-table">
+                                <div class="card">
+                                    <h3 class="card-title">Loot Table Editor</h3>
+                                    <p class="card-description">Design loot tables for blocks, entities, and chests</p>
+                                    <div class="iframe-container" id="loot-table-container">
+                                        <div class="iframe-loading">
+                                            <div class="spinner"></div>
+                                            <p>Loading Loot Table Editor...</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="tab-content" id="tab-structure-editor">
+                                <div class="card">
+                                    <h3 class="card-title">Structure Editor</h3>
+                                    <p class="card-description">Create and edit structure files for world generation</p>
+                                    <div class="iframe-container" id="structure-container">
+                                        <div class="iframe-loading">
+                                            <div class="spinner"></div>
+                                            <p>Loading Structure Editor...</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Entities Documentation Section -->
+                <div id="doc-entities-section" class="section">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title">⚡ Entity Development Guide</h2>
+                            <p class="card-description">Complete guide to creating custom entities with advanced behaviors, AI systems, and interactions</p>
+                        </div>
+                        
+                        <div class="doc-search-container">
+                            <span class="doc-search-icon">🔍</span>
+                            <input type="text" class="doc-search" placeholder="Search entity documentation..." id="entityDocSearch">
+                        </div>
+                        
+                        <div class="doc-stats">
+                            <div class="doc-stat">
+                                <div class="doc-stat-number">8</div>
+                                <div class="doc-stat-label">Sections</div>
+                            </div>
+                            <div class="doc-stat">
+                                <div class="doc-stat-number">25+</div>
+                                <div class="doc-stat-label">Components</div>
+                            </div>
+                            <div class="doc-stat">
+                                <div class="doc-stat-number">15+</div>
+                                <div class="doc-stat-label">Behaviors</div>
+                            </div>
+                        </div>
+                        
+                        <div class="doc-section expanded" data-section="entity-basics">
+                            <div class="doc-section-header">
+                                <div class="doc-section-info">
+                                    <div class="doc-section-icon">📚</div>
+                                    <div class="doc-section-content">
+                                        <div class="doc-section-title">Entity Basics</div>
+                                        <div class="doc-section-desc">Understanding entity structure, files, and basic concepts</div>
+                                        <div class="doc-section-meta">
+                                            <span>• <strong>beginner</strong></span>
+                                            <span>⏱️ <strong>20 min</strong></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <span class="doc-section-chevron">▼</span>
+                            </div>
+                            <div class="doc-section-body">
+                                <p>Entities in Minecraft Bedrock are complex objects that can move, interact, and exhibit behaviors. They consist of two main components:</p>
+                                <ul>
+                                    <li><strong>Behavior Pack Entity:</strong> Defines logic, AI, components, and server-side behavior</li>
+                                    <li><strong>Resource Pack Entity:</strong> Defines visuals, models, textures, and animations</li>
+                                </ul>
+                                <h4>Basic Entity Structure</h4>
+                                <pre><code>{
+  "format_version": "1.19.0",
+  "minecraft:entity": {
+    "description": {
+      "identifier": "mypack:custom_entity",
+      "is_spawnable": true,
+      "is_summonable": true
+    },
+    "components": {
+      "minecraft:health": { "value": 20 },
+      "minecraft:movement": { "value": 0.3 }
+    }
+  }
+}</code></pre>
+                            </div>
+                        </div>
+                        
+                        <div class="doc-section" data-section="entity-components">
+                            <div class="doc-section-header">
+                                <div class="doc-section-info">
+                                    <div class="doc-section-icon">🧩</div>
+                                    <div class="doc-section-content">
+                                        <div class="doc-section-title">Entity Components</div>
+                                        <div class="doc-section-desc">Health, movement, physics, and interaction components</div>
+                                        <div class="doc-section-meta">
+                                            <span>• <strong>intermediate</strong></span>
+                                            <span>⏱️ <strong>45 min</strong></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <span class="doc-section-chevron">▼</span>
+                            </div>
+                            <div class="doc-section-body">
+                                <h4>Essential Components</h4>
+                                <ul>
+                                    <li><strong>minecraft:health</strong> - Entity's health points and regeneration</li>
+                                    <li><strong>minecraft:movement</strong> - Basic movement speed and type</li>
+                                    <li><strong>minecraft:physics</strong> - Collision boxes and gravity</li>
+                                    <li><strong>minecraft:pushable</strong> - How entity interacts with pushing</li>
+                                    <li><strong>minecraft:collision_box</strong> - Hit detection boundaries</li>
+                                </ul>
+                                <h4>Example: Flying Entity</h4>
+                                <pre><code>"minecraft:physics": {
+  "has_gravity": false,
+  "has_collision": true
+},
+"minecraft:flying_speed": {
+  "value": 0.5
+},
+"minecraft:movement": {
+  "value": 0.3
+}</code></pre>
+                            </div>
+                        </div>
+                        
+                        <div class="doc-section" data-section="entity-ai">
+                            <div class="doc-section-header">
+                                <div class="doc-section-info">
+                                    <div class="doc-section-icon">🤖</div>
+                                    <div class="doc-section-content">
+                                        <div class="doc-section-title">AI & Behavior Trees</div>
+                                        <div class="doc-section-desc">Goal-based AI, behavior trees, and advanced mob intelligence</div>
+                                        <div class="doc-section-meta">
+                                            <span>• <strong>advanced</strong></span>
+                                            <span>⏱️ <strong>60 min</strong></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <span class="doc-section-chevron">▼</span>
+                            </div>
+                            <div class="doc-section-body">
+                                <p>Behavior trees control entity AI through goals with priorities and conditions.</p>
+                                <h4>Common AI Goals</h4>
+                                <ul>
+                                    <li><strong>minecraft:behavior.random_stroll</strong> - Wandering behavior</li>
+                                    <li><strong>minecraft:behavior.look_at_player</strong> - Track player movement</li>
+                                    <li><strong>minecraft:behavior.panic</strong> - Flee when damaged</li>
+                                    <li><strong>minecraft:behavior.follow_target</strong> - Chase specific targets</li>
+                                </ul>
+                                <h4>Priority System Example</h4>
+                                <pre><code>"minecraft:behavior.panic": {
+  "priority": 1,
+  "speed_multiplier": 1.5
+},
+"minecraft:behavior.random_stroll": {
+  "priority": 2,
+  "speed_multiplier": 1.0
+}</code></pre>
+                            </div>
+                        </div>
+                        
+                        <div class="doc-section" data-section="entity-animations">
+                            <div class="doc-section-header">
+                                <div class="doc-section-info">
+                                    <div class="doc-section-icon">🎬</div>
+                                    <div class="doc-section-content">
+                                        <div class="doc-section-title">Animations & Models</div>
+                                        <div class="doc-section-desc">3D models, animations, textures, and visual effects</div>
+                                        <div class="doc-section-meta">
+                                            <span>• <strong>intermediate</strong></span>
+                                            <span>⏱️ <strong>90 min</strong></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <span class="doc-section-chevron">▼</span>
+                            </div>
+                            <div class="doc-section-body">
+                                <p>Visual representation requires client entity files, models, and animations.</p>
+                                <h4>Client Entity Structure</h4>
+                                <pre><code>{
+  "format_version": "1.19.0",
+  "minecraft:client_entity": {
+    "description": {
+      "identifier": "mypack:custom_entity",
+      "materials": { "default": "entity" },
+      "textures": { "default": "textures/entity/custom" },
+      "geometry": { "default": "geometry.custom_entity" },
+      "animations": {
+        "walk": "animation.custom_entity.walk",
+        "idle": "animation.custom_entity.idle"
+      }
+    }
+  }
+}</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Blocks Documentation Section -->
+                <div id="doc-blocks-section" class="section">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title">🧱 Block Development Guide</h2>
+                            <p class="card-description">Master block creation, mechanics, states, and advanced interactions</p>
+                        </div>
+                        
+                        <div class="doc-search-container">
+                            <span class="doc-search-icon">🔍</span>
+                            <input type="text" class="doc-search" placeholder="Search block documentation..." id="blockDocSearch">
+                        </div>
+                        
+                        <div class="doc-stats">
+                            <div class="doc-stat">
+                                <div class="doc-stat-number">6</div>
+                                <div class="doc-stat-label">Sections</div>
+                            </div>
+                            <div class="doc-stat">
+                                <div class="doc-stat-number">20+</div>
+                                <div class="doc-stat-label">Components</div>
+                            </div>
+                            <div class="doc-stat">
+                                <div class="doc-stat-number">8+</div>
+                                <div class="doc-stat-label">Events</div>
+                            </div>
+                        </div>
+                        
+                        <div class="doc-section expanded" data-section="block-basics">
+                            <div class="doc-section-header">
+                                <div class="doc-section-info">
+                                    <div class="doc-section-icon">📚</div>
+                                    <div class="doc-section-content">
+                                        <div class="doc-section-title">Block Fundamentals</div>
+                                        <div class="doc-section-desc">Basic block structure, properties, and placement</div>
+                                        <div class="doc-section-meta">
+                                            <span>• <strong>beginner</strong></span>
+                                            <span>⏱️ <strong>25 min</strong></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <span class="doc-section-chevron">▼</span>
+                            </div>
+                            <div class="doc-section-body">
+                                <p>Blocks are the fundamental building components of Minecraft worlds. Custom blocks can have unique properties, behaviors, and interactions.</p>
+                                <h4>Basic Block Structure</h4>
+                                <pre><code>{
+  "format_version": "1.19.0",
+  "minecraft:block": {
+    "description": {
+      "identifier": "mypack:custom_block",
+      "menu_category": {
+        "category": "construction"
+      }
+    },
+    "components": {
+      "minecraft:destructible_by_mining": {
+        "seconds_to_destroy": 2.0
+      },
+      "minecraft:material_instances": {
+        "*": {
+          "texture": "custom_block",
+          "render_method": "opaque"
+        }
+      }
+    }
+  }
+}</code></pre>
+                                <h4>Key Properties</h4>
+                                <ul>
+                                    <li><strong>Hardness:</strong> Time required to mine the block</li>
+                                    <li><strong>Blast Resistance:</strong> Resistance to explosions</li>
+                                    <li><strong>Material:</strong> Affects sounds, particle effects, and tool effectiveness</li>
+                                    <li><strong>Light Emission:</strong> How much light the block produces</li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <div class="doc-section" data-section="block-states">
+                            <div class="doc-section-header">
+                                <div class="doc-section-info">
+                                    <div class="doc-section-icon">🔄</div>
+                                    <div class="doc-section-content">
+                                        <div class="doc-section-title">Block States & Variants</div>
+                                        <div class="doc-section-desc">Multiple states, rotations, and conditional properties</div>
+                                        <div class="doc-section-meta">
+                                            <span>• <strong>intermediate</strong></span>
+                                            <span>⏱️ <strong>40 min</strong></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <span class="doc-section-chevron">▼</span>
+                            </div>
+                            <div class="doc-section-body">
+                                <p>Block states allow a single block to have multiple variations based on different conditions.</p>
+                                <h4>Defining States</h4>
+                                <pre><code>"description": {
+  "identifier": "mypack:lamp_block",
+  "states": {
+    "mypack:lit": [false, true],
+    "mypack:color": ["red", "green", "blue"]
+  }
+}</code></pre>
+                                <h4>State-Based Components</h4>
+                                <pre><code>"components": {
+  "minecraft:material_instances": {
+    "*": {
+      "texture": "lamp_off",
+      "render_method": "opaque"
+    }
+  }
+},
+"permutations": [
+  {
+    "condition": "q.block_state('mypack:lit')",
+    "components": {
+      "minecraft:light_emission": 15,
+      "minecraft:material_instances": {
+        "*": {
+          "texture": "lamp_on"
+        }
+      }
+    }
+  }
+]</code></pre>
+                            </div>
+                        </div>
+                        
+                        <div class="doc-section" data-section="block-events">
+                            <div class="doc-section-header">
+                                <div class="doc-section-info">
+                                    <div class="doc-section-icon">⚡</div>
+                                    <div class="doc-section-content">
+                                        <div class="doc-section-title">Block Events & Interactions</div>
+                                        <div class="doc-section-desc">Player interactions, redstone, and custom events</div>
+                                        <div class="doc-section-meta">
+                                            <span>• <strong>advanced</strong></span>
+                                            <span>⏱️ <strong>35 min</strong></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <span class="doc-section-chevron">▼</span>
+                            </div>
+                            <div class="doc-section-body">
+                                <p>Events allow blocks to respond to player actions and world changes.</p>
+                                <h4>Common Block Events</h4>
+                                <ul>
+                                    <li><strong>minecraft:on_interact:</strong> Triggered when player right-clicks</li>
+                                    <li><strong>minecraft:on_placed:</strong> When block is first placed</li>
+                                    <li><strong>minecraft:on_destroy:</strong> When block is broken</li>
+                                    <li><strong>minecraft:on_step_on:</strong> When entity steps on block</li>
+                                </ul>
+                                <h4>Interactive Block Example</h4>
+                                <pre><code>"events": {
+  "mypack:toggle_light": {
+    "set_block_state": {
+      "mypack:lit": "!q.block_state('mypack:lit')"
+    }
+  }
+},
+"components": {
+  "minecraft:on_interact": {
+    "event": "mypack:toggle_light"
+  }
+}</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Items Documentation Section -->
+                <div id="doc-items-section" class="section">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title">🍎 Item Development Guide</h2>
+                            <p class="card-description">Complete guide to creating tools, weapons, armor, and special items</p>
+                        </div>
+                        
+                        <div class="doc-search-container">
+                            <span class="doc-search-icon">🔍</span>
+                            <input type="text" class="doc-search" placeholder="Search item documentation..." id="itemDocSearch">
+                        </div>
+                        
+                        <div class="doc-stats">
+                            <div class="doc-stat">
+                                <div class="doc-stat-number">7</div>
+                                <div class="doc-stat-label">Sections</div>
+                            </div>
+                            <div class="doc-stat">
+                                <div class="doc-stat-number">15+</div>
+                                <div class="doc-stat-label">Components</div>
+                            </div>
+                            <div class="doc-stat">
+                                <div class="doc-stat-number">10+</div>
+                                <div class="doc-stat-label">Use Types</div>
+                            </div>
+                        </div>
+                        
+                        <div class="doc-section expanded" data-section="item-basics">
+                            <div class="doc-section-header">
+                                <div class="doc-section-info">
+                                    <div class="doc-section-icon">📚</div>
+                                    <div class="doc-section-content">
+                                        <div class="doc-section-title">Item Fundamentals</div>
+                                        <div class="doc-section-desc">Basic item structure, properties, and behavior</div>
+                                        <div class="doc-section-meta">
+                                            <span>• <strong>beginner</strong></span>
+                                            <span>⏱️ <strong>20 min</strong></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <span class="doc-section-chevron">▼</span>
+                            </div>
+                            <div class="doc-section-body">
+                                <p>Items are objects that players can hold, use, and interact with. They can be tools, weapons, food, or decorative objects.</p>
+                                <h4>Basic Item Structure</h4>
+                                <pre><code>{
+  "format_version": "1.19.0",
+  "minecraft:item": {
+    "description": {
+      "identifier": "mypack:custom_item",
+      "menu_category": {
+        "category": "items"
+      }
+    },
+    "components": {
+      "minecraft:max_stack_size": 64,
+      "minecraft:icon": {
+        "texture": "custom_item"
+      },
+      "minecraft:display_name": {
+        "value": "Custom Item"
+      }
+    }
+  }
+}</code></pre>
+                                <h4>Essential Properties</h4>
+                                <ul>
+                                    <li><strong>Max Stack Size:</strong> How many can stack in one slot</li>
+                                    <li><strong>Durability:</strong> For tools and equipment that wear out</li>
+                                    <li><strong>Category:</strong> Where item appears in creative menu</li>
+                                    <li><strong>Rarity:</strong> Affects name color and enchantment glint</li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <div class="doc-section" data-section="item-tools">
+                            <div class="doc-section-header">
+                                <div class="doc-section-info">
+                                    <div class="doc-section-icon">⚒️</div>
+                                    <div class="doc-section-content">
+                                        <div class="doc-section-title">Tools & Weapons</div>
+                                        <div class="doc-section-desc">Mining tools, combat weapons, and custom interactions</div>
+                                        <div class="doc-section-meta">
+                                            <span>• <strong>intermediate</strong></span>
+                                            <span>⏱️ <strong>45 min</strong></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <span class="doc-section-chevron">▼</span>
+                            </div>
+                            <div class="doc-section-body">
+                                <p>Tools and weapons have special properties for mining, combat, and interaction.</p>
+                                <h4>Tool Components</h4>
+                                <ul>
+                                    <li><strong>minecraft:durability:</strong> Tool health and repair</li>
+                                    <li><strong>minecraft:digger:</strong> What blocks it can mine</li>
+                                    <li><strong>minecraft:weapon:</strong> Attack damage and speed</li>
+                                    <li><strong>minecraft:enchantable:</strong> What enchantments apply</li>
+                                </ul>
+                                <h4>Custom Pickaxe Example</h4>
+                                <pre><code>"minecraft:durability": {
+  "max_durability": 500,
+  "damage_chance": {
+    "min": 5,
+    "max": 10
+  }
+},
+"minecraft:digger": {
+  "use_efficiency": true,
+  "destroy_speeds": [
+    {
+      "block": "minecraft:stone",
+      "speed": 8
+    },
+    {
+      "block": {
+        "tags": "q.any_tag('stone', 'metal')"
+      },
+      "speed": 6
+    }
+  ]
+}</code></pre>
+                            </div>
+                        </div>
+                        
+                        <div class="doc-section" data-section="item-armor">
+                            <div class="doc-section-header">
+                                <div class="doc-section-info">
+                                    <div class="doc-section-icon">🛡️</div>
+                                    <div class="doc-section-content">
+                                        <div class="doc-section-title">Armor & Wearables</div>
+                                        <div class="doc-section-desc">Protective gear, special effects, and equipment sets</div>
+                                        <div class="doc-section-meta">
+                                            <span>• <strong>intermediate</strong></span>
+                                            <span>⏱️ <strong>40 min</strong></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <span class="doc-section-chevron">▼</span>
+                            </div>
+                            <div class="doc-section-body">
+                                <p>Armor provides protection and can grant special abilities to the wearer.</p>
+                                <h4>Armor Components</h4>
+                                <pre><code>"minecraft:wearable": {
+  "slot": "slot.armor.chest",
+  "protection": 6
+},
+"minecraft:durability": {
+  "max_durability": 528
+},
+"minecraft:enchantable": {
+  "value": 12,
+  "slot": "armor_torso"
+}</code></pre>
+                                <h4>Special Armor Effects</h4>
+                                <ul>
+                                    <li><strong>Fire Resistance:</strong> Protection from lava and fire</li>
+                                    <li><strong>Water Breathing:</strong> Extended underwater time</li>
+                                    <li><strong>Speed Boost:</strong> Movement enhancement</li>
+                                    <li><strong>Jump Boost:</strong> Higher jumping ability</li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <div class="doc-section" data-section="item-consumables">
+                            <div class="doc-section-header">
+                                <div class="doc-section-info">
+                                    <div class="doc-section-icon">🍯</div>
+                                    <div class="doc-section-content">
+                                        <div class="doc-section-title">Food & Consumables</div>
+                                        <div class="doc-section-desc">Edible items, potions, and single-use objects</div>
+                                        <div class="doc-section-meta">
+                                            <span>• <strong>intermediate</strong></span>
+                                            <span>⏱️ <strong>30 min</strong></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <span class="doc-section-chevron">▼</span>
+                            </div>
+                            <div class="doc-section-body">
+                                <p>Consumable items are used once and provide effects or restore health/hunger.</p>
+                                <h4>Food Properties</h4>
+                                <pre><code>"minecraft:food": {
+  "nutrition": 6,
+  "saturation_modifier": "normal",
+  "can_always_eat": false,
+  "using_converts_to": "minecraft:bowl"
+},
+"minecraft:use_modifiers": {
+  "use_duration": 1.6,
+  "movement_modifier": 0.35
+}</code></pre>
+                                <h4>Custom Effects</h4>
+                                <ul>
+                                    <li><strong>Healing:</strong> Restore health points</li>
+                                    <li><strong>Effects:</strong> Grant status effects like speed or strength</li>
+                                    <li><strong>Transformation:</strong> Convert to different item after use</li>
+                                    <li><strong>Special Actions:</strong> Trigger custom events or commands</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Scripting APIs Documentation Section -->
+                <div id="doc-scripting-section" class="section">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title">💻 Scripting APIs Reference</h2>
+                            <p class="card-description">Complete reference for Minecraft Script APIs, modules, and best practices</p>
+                        </div>
+                        
+                        <div class="doc-search-container">
+                            <span class="doc-search-icon">🔍</span>
+                            <input type="text" class="doc-search" placeholder="Search scripting documentation..." id="scriptDocSearch">
+                        </div>
+                        
+                        <div class="doc-stats">
+                            <div class="doc-stat">
+                                <div class="doc-stat-number">6</div>
+                                <div class="doc-stat-label">Modules</div>
+                            </div>
+                            <div class="doc-stat">
+                                <div class="doc-stat-number">100+</div>
+                                <div class="doc-stat-label">APIs</div>
+                            </div>
+                            <div class="doc-stat">
+                                <div class="doc-stat-number">50+</div>
+                                <div class="doc-stat-label">Events</div>
+                            </div>
+                        </div>
+                        
+                        <div class="doc-section expanded" data-section="script-basics">
+                            <div class="doc-section-header">
+                                <div class="doc-section-info">
+                                    <div class="doc-section-icon">📚</div>
+                                    <div class="doc-section-content">
+                                        <div class="doc-section-title">Scripting Fundamentals</div>
+                                        <div class="doc-section-desc">Getting started with Minecraft script APIs and modules</div>
+                                        <div class="doc-section-meta">
+                                            <span>• <strong>beginner</strong></span>
+                                            <span>⏱️ <strong>30 min</strong></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <span class="doc-section-chevron">▼</span>
+                            </div>
+                            <div class="doc-section-body">
+                                <p>Minecraft Script APIs allow you to create dynamic behaviors and interactions using JavaScript.</p>
+                                <h4>Core Modules</h4>
+                                <ul>
+                                    <li><strong>@minecraft/server:</strong> Core world, player, and entity APIs</li>
+                                    <li><strong>@minecraft/server-ui:</strong> GUI forms and interactive elements</li>
+                                    <li><strong>@minecraft/server-gametest:</strong> Testing and development tools</li>
+                                    <li><strong>@minecraft/server-admin:</strong> Administrative commands and controls</li>
+                                </ul>
+                                <h4>Basic Script Structure</h4>
+                                <pre><code>import { world, system, Player } from "@minecraft/server";
+
+// Event listener
+world.afterEvents.worldInitialize.subscribe(() => {
+    console.log("World initialized!");
+});
+
+// Repeating function
+system.runInterval(() => {
+    // Runs every tick (20 times per second)
+    const players = world.getPlayers();
+    players.forEach(player => {
+        // Do something with each player
+    });
+}, 1);</code></pre>
+                            </div>
+                        </div>
+                        
+                        <div class="doc-section" data-section="script-world">
+                            <div class="doc-section-header">
+                                <div class="doc-section-info">
+                                    <div class="doc-section-icon">🌍</div>
+                                    <div class="doc-section-content">
+                                        <div class="doc-section-title">World & Dimension APIs</div>
+                                        <div class="doc-section-desc">World access, block manipulation, and dimension control</div>
+                                        <div class="doc-section-meta">
+                                            <span>• <strong>intermediate</strong></span>
+                                            <span>⏱️ <strong>45 min</strong></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <span class="doc-section-chevron">▼</span>
+                            </div>
+                            <div class="doc-section-body">
+                                <p>World APIs provide access to blocks, entities, and world properties.</p>
+                                <h4>World Object Methods</h4>
+                                <pre><code>import { world, BlockPermutation } from "@minecraft/server";
+
+// Get all players
+const players = world.getPlayers();
+
+// Get specific dimension
+const overworld = world.getDimension("overworld");
+const nether = world.getDimension("nether");
+
+// Block manipulation
+const location = { x: 0, y: 64, z: 0 };
+const block = overworld.getBlock(location);
+block.setPermutation(BlockPermutation.resolve("minecraft:diamond_block"));
+
+// Spawn entities
+overworld.spawnEntity("minecraft:cow", location);
+
+// Execute commands
+overworld.runCommand("weather rain");</code></pre>
+                                <h4>Common World Events</h4>
+                                <ul>
+                                    <li><strong>worldInitialize:</strong> When world starts</li>
+                                    <li><strong>blockPlace:</strong> When player places block</li>
+                                    <li><strong>blockBreak:</strong> When player breaks block</li>
+                                    <li><strong>itemUse:</strong> When player uses an item</li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <div class="doc-section" data-section="script-entities">
+                            <div class="doc-section-header">
+                                <div class="doc-section-info">
+                                    <div class="doc-section-icon">⚡</div>
+                                    <div class="doc-section-content">
+                                        <div class="doc-section-title">Player & Entity APIs</div>
+                                        <div class="doc-section-desc">Player interactions, entity manipulation, and custom behaviors</div>
+                                        <div class="doc-section-meta">
+                                            <span>• <strong>intermediate</strong></span>
+                                            <span>⏱️ <strong>50 min</strong></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <span class="doc-section-chevron">▼</span>
+                            </div>
+                            <div class="doc-section-body">
+                                <p>Entity and Player APIs allow interaction with all moving objects in the world.</p>
+                                <h4>Player Methods</h4>
+                                <pre><code>import { world } from "@minecraft/server";
+
+world.afterEvents.playerJoin.subscribe((event) => {
+    const player = event.player;
+    
+    // Player information
+    console.log(`${player.name} joined at ${player.location}`);
+    
+    // Send messages
+    player.sendMessage("Welcome to the server!");
+    player.onScreenDisplay.setTitle("Welcome!", {
+        fadeInDuration: 20,
+        stayDuration: 60,
+        fadeOutDuration: 20
+    });
+    
+    // Inventory manipulation
+    const inventory = player.getComponent("inventory").container;
+    inventory.addItem(new ItemStack("minecraft:diamond", 5));
+    
+    // Teleportation
+    player.teleport({ x: 0, y: 100, z: 0 });
+});</code></pre>
+                                <h4>Entity Queries</h4>
+                                <pre><code>// Find nearby entities
+const location = { x: 0, y: 64, z: 0 };
+const nearbyEntities = overworld.getEntities({
+    location: location,
+    maxDistance: 10,
+    type: "minecraft:cow"
+});</code></pre>
+                            </div>
+                        </div>
+                        
+                        <div class="doc-section" data-section="script-ui">
+                            <div class="doc-section-header">
+                                <div class="doc-section-info">
+                                    <div class="doc-section-icon">🖥️</div>
+                                    <div class="doc-section-content">
+                                        <div class="doc-section-title">User Interface APIs</div>
+                                        <div class="doc-section-desc">Forms, modals, action bars, and custom GUIs</div>
+                                        <div class="doc-section-meta">
+                                            <span>• <strong>advanced</strong></span>
+                                            <span>⏱️ <strong>40 min</strong></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <span class="doc-section-chevron">▼</span>
+                            </div>
+                            <div class="doc-section-body">
+                                <p>UI APIs allow creation of interactive forms and displays for players.</p>
+                                <h4>Form Types</h4>
+                                <pre><code>import { ActionFormData, ModalFormData, MessageFormData } from "@minecraft/server-ui";
+
+// Action Form (buttons)
+const actionForm = new ActionFormData()
+    .title("Main Menu")
+    .body("Choose an option:")
+    .button("Option 1", "textures/ui/icon1")
+    .button("Option 2", "textures/ui/icon2");
+
+// Modal Form (inputs)
+const modalForm = new ModalFormData()
+    .title("Settings")
+    .textField("Player Name", "Enter name...")
+    .toggle("Enable PvP", false)
+    .slider("Difficulty", 1, 10, 1, 5);
+
+// Message Form (yes/no)
+const messageForm = new MessageFormData()
+    .title("Confirm Action")
+    .body("Are you sure you want to continue?")
+    .button1("Yes")
+    .button2("No");</code></pre>
+                                <h4>Displaying Forms</h4>
+                                <pre><code>// Show form to player
+actionForm.show(player).then((response) => {
+    if (response.selection === 0) {
+        player.sendMessage("You chose Option 1!");
+    }
+});</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Client Entity Builder Section -->
+                <div id="builder-client-entity-section" class="section">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title">Client Entity Builder</h2>
+                            <p class="card-description">Create client-side entity definitions for custom rendering and animations</p>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Client Entity Identifier</label>
+                            <input type="text" class="form-input" placeholder="namespace:client_entity" value="mypack:client_entity">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Generated Client Entity JSON</label>
+                            <textarea class="form-textarea" rows="10" placeholder="Generated JSON will appear here..."></textarea>
+                        </div>
+                        <button class="btn btn-primary">Generate Client Entity</button>
+                        <button class="btn btn-secondary">Download Files</button>
+                    </div>
+                </div>
+
+                <!-- Loot Tables Builder Section -->
+                <div id="builder-loot-tables-section" class="section">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title">Loot Tables Builder</h2>
+                            <p class="card-description">Create loot tables for blocks, entities, and chests with advanced conditions</p>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Loot Table Type</label>
+                            <select class="form-select">
+                                <option value="entity">Entity Loot</option>
+                                <option value="block">Block Loot</option>
+                                <option value="chest">Chest Loot</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Generated Loot Table JSON</label>
+                            <textarea class="form-textarea" rows="10" placeholder="Generated loot table JSON will appear here..."></textarea>
+                        </div>
+                        <button class="btn btn-primary">Generate Loot Table</button>
+                        <button class="btn btn-secondary">Download Files</button>
+                    </div>
+                </div>
+
+                <!-- Biome Builder Section -->
+                <div id="builder-biome-section" class="section">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title">Biome Builder</h2>
+                            <p class="card-description">Create custom biomes with unique generation parameters and features</p>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Biome Identifier</label>
+                            <input type="text" class="form-input" placeholder="namespace:biome_name" value="mypack:custom_biome">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Temperature</label>
+                            <input type="number" class="form-input" step="0.1" min="-2" max="2" value="0.8">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Generated Biome JSON</label>
+                            <textarea class="form-textarea" rows="10" placeholder="Generated biome JSON will appear here..."></textarea>
+                        </div>
+                        <button class="btn btn-primary">Generate Biome</button>
+                        <button class="btn btn-secondary">Download Files</button>
+                    </div>
+                </div>
+
+                <!-- Spawn Rules Builder Section -->
+                <div id="builder-spawn-rules-section" class="section">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title">Spawn Rules Builder</h2>
+                            <p class="card-description">Define when and where your custom entities spawn in the world</p>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Entity to Spawn</label>
+                            <input type="text" class="form-input" placeholder="namespace:entity" value="mypack:custom_entity">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Spawn Conditions</label>
+                            <select class="form-select">
+                                <option value="surface">Surface Spawning</option>
+                                <option value="underground">Underground Spawning</option>
+                                <option value="water">Water Spawning</option>
+                                <option value="nether">Nether Spawning</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Generated Spawn Rules JSON</label>
+                            <textarea class="form-textarea" rows="10" placeholder="Generated spawn rules JSON will appear here..."></textarea>
+                        </div>
+                        <button class="btn btn-primary">Generate Spawn Rules</button>
+                        <button class="btn btn-secondary">Download Files</button>
+                    </div>
+                </div>
+
+                <!-- JSON Validator Section -->
+                <div id="json-validator-section" class="section">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title">JSON Validator</h2>
+                            <p class="card-description">Validate your addon JSON files for syntax errors and schema compliance</p>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">JSON Content</label>
+                            <textarea class="form-textarea" rows="15" placeholder='Paste your JSON content here...
+Example:
+{
+  "format_version": "1.19.0",
+  "minecraft:entity": {
+    "description": {
+      "identifier": "mypack:custom_entity"
+    }
+  }
+}'></textarea>
+                        </div>
+                        <div class="flex gap-4 mb-4">
+                            <button class="btn btn-primary">Validate JSON</button>
+                            <button class="btn btn-secondary">Format JSON</button>
+                            <button class="btn btn-outline">Clear</button>
+                        </div>
+                        <div id="validation-results" class="card" style="display: none;">
+                            <h3 class="card-title">Validation Results</h3>
+                            <div id="validation-content"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Community Hub Section -->
+                <div id="community-hub-section" class="section">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title">Community Hub</h2>
+                            <p class="card-description">Connect with other Minecraft Bedrock addon developers and share your creations</p>
+                        </div>
+                        <div class="grid">
+                            <div class="card">
+                                <h3 class="card-title">🌟 Featured Addons</h3>
+                                <p class="card-description">Discover the most popular addons from the community</p>
+                                <button class="btn btn-primary">Browse Featured</button>
+                            </div>
+                            <div class="card">
+                                <h3 class="card-title">💬 Discord Community</h3>
+                                <p class="card-description">Join our Discord server for help and discussions</p>
+                                <button class="btn btn-primary">Join Discord</button>
+                            </div>
+                            <div class="card">
+                                <h3 class="card-title">📚 Tutorials</h3>
+                                <p class="card-description">Step-by-step guides for addon development</p>
+                                <button class="btn btn-primary">View Tutorials</button>
+                            </div>
+                            <div class="card">
+                                <h3 class="card-title">🤝 Share Your Work</h3>
+                                <p class="card-description">Submit your addons to the community showcase</p>
+                                <button class="btn btn-primary">Submit Addon</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Omni-Science Section -->
+                <div id="omni-science-section" class="section">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title">⭐ Omni-Science Game Studio</h2>
+                            <p class="card-description">About the creators of this professional addon development suite</p>
+                        </div>
+                        <div class="grid">
+                            <div class="card">
+                                <h3 class="card-title">🎮 Our Studio</h3>
+                                <p class="card-description">Professional game development studio specializing in Minecraft content creation</p>
+                                <ul class="mb-4">
+                                    <li>5+ years of Minecraft addon development</li>
+                                    <li>Over 100 published addons</li>
+                                    <li>Trusted by thousands of developers</li>
+                                    <li>Regular updates and new features</li>
+                                </ul>
+                            </div>
+                            <div class="card">
+                                <h3 class="card-title">🛠️ Our Tools</h3>
+                                <p class="card-description">Comprehensive suite of development tools</p>
+                                <ul class="mb-4">
+                                    <li>Visual entity, block, and item builders</li>
+                                    <li>Advanced script editor with autocomplete</li>
+                                    <li>Professional external tool integrations</li>
+                                    <li>Complete documentation and tutorials</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <h3 class="card-title">🌟 Support Our Work</h3>
+                            <p class="card-description">Help us continue developing amazing tools for the Minecraft community</p>
+                            <div class="flex gap-4">
+                                <button class="btn btn-primary">⭐ Star on GitHub</button>
+                                <button class="btn btn-secondary">💖 Support Us</button>
+                                <button class="btn btn-outline">📧 Contact</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Addon Packager Section -->
+                <div id="addon-packager-section" class="section">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title">Addon Packager</h2>
+                            <p class="card-description">Package and export your addons for distribution</p>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Addon Name</label>
+                            <input type="text" class="form-input" id="addonName" placeholder="My Custom Addon" value="My Custom Addon">
+                        </div>
+                        
+                        <div class="grid">
+                            <div class="form-group">
+                                <label class="form-label">Version</label>
+                                <input type="text" class="form-input" id="addonVersion" value="1.0.0">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Author</label>
+                                <input type="text" class="form-input" id="addonAuthor" placeholder="Your Name">
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Description</label>
+                            <textarea class="form-textarea" id="addonDescription" placeholder="Describe your addon..."></textarea>
+                        </div>
+                        
+                        <div class="card">
+                            <h3 class="card-title">Addon Contents</h3>
+                            <div id="addonContents">
+                                <p class="text-muted">No files added yet. Use the builders to create content.</p>
+                            </div>
+                        </div>
+                        
+                        <button class="btn btn-primary" id="packageAddon">Package Addon</button>
+                        <button class="btn btn-secondary" id="previewAddon">Preview Structure</button>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Monaco Editor Script -->
+    <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.44.0/min/vs/loader.js"></script>
+    
+    <script>
+        // Application State
+        const appState = {
+            currentSection: 'welcome',
+            selectedComponents: new Set(),
+            entityData: {},
+            blockData: {},
+            itemData: {},
+            recipeData: {},
+            addonFiles: {}
+        };
+
+        // Entity Components Registry
+        const entityComponents = [
+            {
+                name: 'minecraft:collision_box',
+                description: 'Defines the entity\'s collision boundaries.',
+                category: 'Core',
+                properties: [
+                    { name: 'width', type: 'number', description: 'Collision box width', default: 0.6 },
+                    { name: 'height', type: 'number', description: 'Collision box height', default: 1.8 }
+                ],
+                tags: ['collision', 'hitbox', 'bounds']
+            },
+            {
+                name: 'minecraft:health',
+                description: 'Defines the entity\'s health points.',
+                category: 'Core',
+                properties: [
+                    { name: 'value', type: 'number', description: 'Health points', default: 20 },
+                    { name: 'max', type: 'number', description: 'Maximum health', default: 20 }
+                ],
+                tags: ['health', 'hp', 'vital']
+            },
+            {
+                name: 'minecraft:behavior.random_stroll',
+                description: 'Makes the entity wander around randomly.',
+                category: 'Behavior',
+                properties: [
+                    { name: 'priority', type: 'number', description: 'Behavior priority', default: 8 },
+                    { name: 'speed_multiplier', type: 'number', description: 'Speed multiplier', default: 1.0 }
+                ],
+                tags: ['behavior', 'movement', 'wander']
+            },
+            {
+                name: 'minecraft:behavior.look_at_player',
+                description: 'Makes the entity look at nearby players.',
+                category: 'Behavior',
+                properties: [
+                    { name: 'priority', type: 'number', description: 'Behavior priority', default: 6 },
+                    { name: 'look_distance', type: 'number', description: 'Maximum look distance', default: 6.0 },
+                    { name: 'probability', type: 'number', description: 'Look probability per tick', default: 0.02 }
+                ],
+                tags: ['behavior', 'look', 'player', 'interaction']
+            },
+            {
+                name: 'minecraft:behavior.float',
+                description: 'Allows the entity to float in water.',
+                category: 'Behavior',
+                properties: [
+                    { name: 'priority', type: 'number', description: 'Behavior priority', default: 0 }
+                ],
+                tags: ['behavior', 'float', 'water', 'swimming']
+            },
+            {
+                name: 'minecraft:pushable',
+                description: 'Defines how the entity can be pushed by other entities.',
+                category: 'Core',
+                properties: [
+                    { name: 'is_pushable', type: 'boolean', description: 'Can be pushed', default: true },
+                    { name: 'is_pushable_by_piston', type: 'boolean', description: 'Can be pushed by pistons', default: true }
+                ],
+                tags: ['physics', 'push', 'collision']
+            }
+        ];
+
+        // Navigation System
+        function initNavigation() {
+            // Sidebar navigation
+            document.querySelectorAll('[data-section]').forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const section = e.currentTarget.getAttribute('data-section');
+                    navigateToSection(section);
+                });
+            });
+
+            // Collapsible navigation sections
+            document.querySelectorAll('[data-toggle]').forEach(toggle => {
+                toggle.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const section = toggle.closest('.nav-section');
+                    section?.classList.toggle('collapsed');
+                });
+            });
+
+            // Sidebar toggle
+            const sidebarToggle = document.getElementById('sidebarToggle');
+            const sidebar = document.getElementById('sidebar');
+            const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+            const sidebarOverlay = document.getElementById('sidebarOverlay');
+
+            sidebarToggle?.addEventListener('click', () => {
+                sidebar?.classList.toggle('collapsed');
+            });
+
+            mobileMenuToggle?.addEventListener('click', () => {
+                sidebar?.classList.toggle('open');
+                sidebarOverlay?.classList.toggle('open');
+            });
+
+            sidebarOverlay?.addEventListener('click', () => {
+                sidebar?.classList.remove('open');
+                sidebarOverlay?.classList.remove('open');
+            });
+
+            // Initialize documentation section interactions
+            initDocumentationInteractions();
+        }
+
+        function navigateToSection(sectionName) {
+            // Update state
+            appState.currentSection = sectionName;
+
+            // Hide all sections
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.remove('active');
+            });
+
+            // Show target section
+            const targetSection = document.getElementById(sectionName + '-section');
+            if (targetSection) {
+                targetSection.classList.add('active');
+            }
+
+            // Update navigation
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+
+            document.querySelectorAll(`[data-section="${sectionName}"]`).forEach(link => {
+                link.classList.add('active');
+            });
+
+            // Update header title
+            const headerTitle = document.getElementById('headerTitle');
+            const titles = {
+                'welcome': 'Welcome',
+                'tutorial': 'Interactive Tutorial',
+                'quick-start': 'Quick Start',
+                'doc-core-concepts': 'Core Concepts Documentation',
+                'doc-entities': 'Entity Documentation',
+                'doc-blocks': 'Block Documentation',
+                'doc-items': 'Item Documentation',
+                'doc-scripting': 'Scripting APIs Documentation',
+                'builder-entity': 'Entity Builder',
+                'builder-client-entity': 'Client Entity Builder',
+                'builder-block': 'Block Builder',
+                'builder-item': 'Item Builder',
+                'builder-recipe': 'Recipe Builder',
+                'builder-loot-tables': 'Loot Tables Builder',
+                'builder-biome': 'Biome Builder',
+                'builder-spawn-rules': 'Spawn Rules Builder',
+                'script-studio': 'Script Studio',
+                'addon-packager': 'Addon Packager',
+                'json-validator': 'JSON Validator',
+                'external-tools': 'External Tools',
+                'community-hub': 'Community Hub',
+                'omni-science': 'Omni-Science Game Studio'
+            };
+
+            if (headerTitle && titles[sectionName]) {
+                headerTitle.textContent = titles[sectionName];
+            }
+
+            // Initialize section-specific functionality
+            initSectionFunctionality(sectionName);
+        }
+
+        // Tab System
+        function initTabSystem() {
+            document.addEventListener('click', (e) => {
+                if (e.target.classList.contains('tab-button')) {
+                    const tabButton = e.target;
+                    const tabName = tabButton.getAttribute('data-tab');
+                    const tabList = tabButton.closest('.tab-list');
+                    
+                    // Update tab buttons
+                    tabList.querySelectorAll('.tab-button').forEach(btn => {
+                        btn.classList.remove('active');
+                    });
+                    tabButton.classList.add('active');
+                    
+                    // Update tab content
+                    const tabsContainer = tabList.closest('.tabs');
+                    tabsContainer.querySelectorAll('.tab-content').forEach(content => {
+                        content.classList.remove('active');
+                    });
+                    
+                    const targetContent = document.getElementById('tab-' + tabName);
+                    if (targetContent) {
+                        targetContent.classList.add('active');
+                    }
+                    
+                    // Handle iframe loading for external tools
+                    if (tabName && appState.currentSection === 'external-tools') {
+                        loadExternalTool(tabName);
+                    }
+                }
+            });
+        }
+
+        // Section-specific initialization
+        function initSectionFunctionality(sectionName) {
+            switch (sectionName) {
+                case 'doc-core-concepts':
+                    initDocumentationSection();
+                    break;
+                case 'builder-entity':
+                    initEntityBuilder();
+                    break;
+                case 'builder-client-entity':
+                    initClientEntityBuilder();
+                    break;
+                case 'builder-block':
+                    initBlockBuilder();
+                    break;
+                case 'builder-item':
+                    initItemBuilder();
+                    break;
+                case 'builder-recipe':
+                    initRecipeBuilder();
+                    break;
+                case 'builder-loot-tables':
+                    initLootTablesBuilder();
+                    break;
+                case 'builder-biome':
+                    initBiomeBuilder();
+                    break;
+                case 'builder-spawn-rules':
+                    initSpawnRulesBuilder();
+                    break;
+                case 'script-studio':
+                    initScriptStudio();
+                    break;
+                case 'json-validator':
+                    initJSONValidator();
+                    break;
+                case 'external-tools':
+                    initExternalTools();
+                    break;
+                case 'addon-packager':
+                    initAddonPackager();
+                    break;
+                case 'community-hub':
+                    initCommunityHub();
+                    break;
+                case 'omni-science':
+                    initOmniScience();
+                    break;
+            }
+        }
+
+        // Entity Builder
+        function initEntityBuilder() {
+            const componentsContainer = document.getElementById('entityComponents');
+            if (!componentsContainer || componentsContainer.children.length > 0) return;
+
+            componentsContainer.innerHTML = '';
+            
+            entityComponents.forEach(component => {
+                const card = document.createElement('div');
+                card.className = 'component-card';
+                card.setAttribute('data-component', component.name);
+                
+                card.innerHTML = `
+                    <div class="component-name">${component.name}</div>
+                    <div class="component-description">${component.description}</div>
+                    <div class="component-tags">
+                        ${component.tags.map(tag => `<span class="component-tag">${tag}</span>`).join('')}
+                    </div>
+                `;
+                
+                card.addEventListener('click', () => toggleComponent(component, card));
+                componentsContainer.appendChild(card);
+            });
+
+            // Initialize buttons
+            const generateBtn = document.getElementById('generateEntity');
+            const downloadBtn = document.getElementById('downloadEntity');
+
+            generateBtn?.addEventListener('click', generateEntityJSON);
+            downloadBtn?.addEventListener('click', downloadEntityFiles);
+        }
+
+        function toggleComponent(component, card) {
+            if (appState.selectedComponents.has(component.name)) {
+                appState.selectedComponents.delete(component.name);
+                card.classList.remove('selected');
+            } else {
+                appState.selectedComponents.add(component.name);
+                card.classList.add('selected');
+            }
+            generateEntityJSON();
+        }
+
+        function generateEntityJSON() {
+            const entityId = document.getElementById('entityId')?.value || 'mypack:custom_entity';
+            const entityName = document.getElementById('entityName')?.value || 'Custom Entity';
+            
+            const components = {};
+            appState.selectedComponents.forEach(componentName => {
+                const component = entityComponents.find(c => c.name === componentName);
+                if (component) {
+                    const componentData = {};
+                    component.properties.forEach(prop => {
+                        componentData[prop.name] = prop.default;
+                    });
+                    components[componentName] = componentData;
+                }
+            });
+
+            const entityJSON = {
+                "format_version": "1.19.0",
+                "minecraft:entity": {
+                    "description": {
+                        "identifier": entityId,
+                        "is_spawnable": true,
+                        "is_summonable": true,
+                        "is_experimental": false
+                    },
+                    "components": components
+                }
+            };
+
+            const output = document.getElementById('entityOutput');
+            if (output) {
+                output.value = JSON.stringify(entityJSON, null, 2);
+            }
+
+            appState.entityData = entityJSON;
+        }
+
+        function downloadEntityFiles() {
+            if (!appState.entityData || Object.keys(appState.entityData).length === 0) {
+                alert('Please generate an entity first!');
+                return;
+            }
+
+            // Create download logic here
+            const blob = new Blob([JSON.stringify(appState.entityData, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'entity.json';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        // Block Builder
+        function initBlockBuilder() {
+            const generateBtn = document.getElementById('generateBlock');
+            const downloadBtn = document.getElementById('downloadBlock');
+
+            generateBtn?.addEventListener('click', generateBlockJSON);
+            downloadBtn?.addEventListener('click', downloadBlockFiles);
+            
+            // Generate initial JSON
+            generateBlockJSON();
+        }
+
+        function generateBlockJSON() {
+            const blockId = document.getElementById('blockId')?.value || 'mypack:custom_block';
+            const blockName = document.getElementById('blockName')?.value || 'Custom Block';
+            const hardness = parseFloat(document.getElementById('blockHardness')?.value) || 2.0;
+            const resistance = parseFloat(document.getElementById('blockResistance')?.value) || 10.0;
+
+            const blockJSON = {
+                "format_version": "1.19.0",
+                "minecraft:block": {
+                    "description": {
+                        "identifier": blockId,
+                        "menu_category": {
+                            "category": "construction"
+                        }
+                    },
+                    "components": {
+                        "minecraft:destructible_by_mining": {
+                            "seconds_to_destroy": hardness
+                        },
+                        "minecraft:destructible_by_explosion": {
+                            "explosion_resistance": resistance
+                        },
+                        "minecraft:material_instances": {
+                            "*": {
+                                "texture": blockId.replace(':', '_'),
+                                "render_method": "opaque"
+                            }
+                        }
+                    }
+                }
+            };
+
+            const output = document.getElementById('blockOutput');
+            if (output) {
+                output.value = JSON.stringify(blockJSON, null, 2);
+            }
+
+            appState.blockData = blockJSON;
+        }
+
+        function downloadBlockFiles() {
+            if (!appState.blockData || Object.keys(appState.blockData).length === 0) {
+                alert('Please generate a block first!');
+                return;
+            }
+
+            const blob = new Blob([JSON.stringify(appState.blockData, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'block.json';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        // Item Builder
+        function initItemBuilder() {
+            const generateBtn = document.getElementById('generateItem');
+            const downloadBtn = document.getElementById('downloadItem');
+
+            generateBtn?.addEventListener('click', generateItemJSON);
+            downloadBtn?.addEventListener('click', downloadItemFiles);
+            
+            // Generate initial JSON
+            generateItemJSON();
+        }
+
+        function generateItemJSON() {
+            const itemId = document.getElementById('itemId')?.value || 'mypack:custom_item';
+            const itemName = document.getElementById('itemName')?.value || 'Custom Item';
+            const stackSize = parseInt(document.getElementById('itemStack')?.value) || 64;
+            const durability = parseInt(document.getElementById('itemDurability')?.value) || 100;
+
+            const itemJSON = {
+                "format_version": "1.19.0",
+                "minecraft:item": {
+                    "description": {
+                        "identifier": itemId,
+                        "menu_category": {
+                            "category": "items"
+                        }
+                    },
+                    "components": {
+                        "minecraft:max_stack_size": stackSize,
+                        "minecraft:durability": {
+                            "max_durability": durability
+                        },
+                        "minecraft:icon": {
+                            "texture": itemId.replace(':', '_')
+                        }
+                    }
+                }
+            };
+
+            const output = document.getElementById('itemOutput');
+            if (output) {
+                output.value = JSON.stringify(itemJSON, null, 2);
+            }
+
+            appState.itemData = itemJSON;
+        }
+
+        function downloadItemFiles() {
+            if (!appState.itemData || Object.keys(appState.itemData).length === 0) {
+                alert('Please generate an item first!');
+                return;
+            }
+
+            const blob = new Blob([JSON.stringify(appState.itemData, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'item.json';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        // Recipe Builder
+        function initRecipeBuilder() {
+            const generateBtn = document.getElementById('generateRecipe');
+            const downloadBtn = document.getElementById('downloadRecipe');
+
+            generateBtn?.addEventListener('click', generateRecipeJSON);
+            downloadBtn?.addEventListener('click', downloadRecipeFiles);
+            
+            // Generate initial JSON
+            generateRecipeJSON();
+        }
+
+        function generateRecipeJSON() {
+            const recipeType = document.getElementById('recipeType')?.value || 'shaped';
+            const result = document.getElementById('recipeResult')?.value || 'mypack:custom_item';
+
+            let recipeJSON = {
+                "format_version": "1.19.0",
+                "minecraft:recipe_shaped": {
+                    "description": {
+                        "identifier": result + "_recipe"
+                    },
+                    "tags": ["crafting_table"],
+                    "pattern": [
+                        "XXX",
+                        "XYX",
+                        "XXX"
+                    ],
+                    "key": {
+                        "X": {
+                            "item": "minecraft:stick"
+                        },
+                        "Y": {
+                            "item": "minecraft:diamond"
+                        }
+                    },
+                    "result": {
+                        "item": result,
+                        "count": 1
+                    }
+                }
+            };
+
+            if (recipeType === 'shapeless') {
+                recipeJSON = {
+                    "format_version": "1.19.0",
+                    "minecraft:recipe_shapeless": {
+                        "description": {
+                            "identifier": result + "_recipe"
+                        },
+                        "tags": ["crafting_table"],
+                        "ingredients": [
+                            {
+                                "item": "minecraft:stick",
+                                "count": 2
+                            },
+                            {
+                                "item": "minecraft:diamond"
+                            }
+                        ],
+                        "result": {
+                            "item": result,
+                            "count": 1
+                        }
+                    }
+                };
+            }
+
+            const output = document.getElementById('recipeOutput');
+            if (output) {
+                output.value = JSON.stringify(recipeJSON, null, 2);
+            }
+
+            appState.recipeData = recipeJSON;
+        }
+
+        function downloadRecipeFiles() {
+            if (!appState.recipeData || Object.keys(appState.recipeData).length === 0) {
+                alert('Please generate a recipe first!');
+                return;
+            }
+
+            const blob = new Blob([JSON.stringify(appState.recipeData, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'recipe.json';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        // Script Studio
+        function initScriptStudio() {
+            // Initialize tab switching for Script Studio
+            const scriptTabs = document.querySelectorAll('#script-studio-section .tab-button');
+            scriptTabs.forEach(tab => {
+                tab.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const tabName = tab.getAttribute('data-tab');
+                    
+                    // Handle "New File" tab specially
+                    if (tabName === 'new') {
+                        createNewFile();
+                        return;
+                    }
+                    
+                    // Normal tab switching
+                    scriptTabs.forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    
+                    const allTabContents = document.querySelectorAll('#script-studio-section .tab-content');
+                    allTabContents.forEach(content => content.classList.remove('active'));
+                    
+                    const selectedTabContent = document.getElementById('tab-' + tabName);
+                    if (selectedTabContent) {
+                        selectedTabContent.classList.add('active');
+                    }
+                });
+            });
+            
+            // Initialize Monaco Editor
+            if (typeof require !== 'undefined') {
+                require.config({ paths: { 'vs': 'https://cdn.jsdelivr.net/npm/monaco-editor@0.44.0/min/vs' }});
+                require(['vs/editor/editor.main'], function () {
+                    // Add Minecraft Script API type definitions
+                    setupMinecraftAPIDefinitions();
+                    
+                    const editor = monaco.editor.create(document.getElementById('monacoEditor'), {
+                        value: [
+                            'import { world, system, Player, Block, Entity } from "@minecraft/server";',
+                            'import { ActionFormData, ModalFormData, MessageFormData } from "@minecraft/server-ui";',
+                            '',
+                            '// Your script code here',
+                            'world.afterEvents.worldInitialize.subscribe(() => {',
+                            '    console.log("World initialized!");',
+                            '    ',
+                            '    // Example: Get all players',
+                            '    const players = world.getPlayers();',
+                            '    players.forEach(player => {',
+                            '        player.sendMessage("Welcome to the custom addon!");',
+                            '    });',
+                            '});',
+                            '',
+                            '// Example: Block break event',
+                            'world.afterEvents.blockBreak.subscribe((event) => {',
+                            '    const player = event.player;',
+                            '    const block = event.block;',
+                            '    ',
+                            '    player.sendMessage(`You broke a ${block.typeId} block!`);',
+                            '});',
+                            '',
+                            '// Example: Player join event',
+                            'world.afterEvents.playerJoin.subscribe((event) => {',
+                            '    const player = event.player;',
+                            '    ',
+                            '    // Show welcome form',
+                            '    const form = new ActionFormData()',
+                            '        .title("Welcome!")',
+                            '        .body(`Hello ${player.name}! Welcome to our server.`)',
+                            '        .button("Get Started", "textures/ui/icon_book")',
+                            '        .button("Settings", "textures/ui/icon_setting");',
+                            '    ',
+                            '    form.show(player);',
+                            '});',
+                            '',
+                            '// Example: Repeating system task',
+                            'system.runInterval(() => {',
+                            '    // Runs every 20 ticks (1 second)',
+                            '    const players = world.getPlayers();',
+                            '    // Add your repeating logic here',
+                            '}, 20);'
+                        ].join('\n'),
+                        language: 'javascript',
+                        theme: 'vs-dark',
+                        automaticLayout: true,
+                        minimap: { enabled: false },
+                        suggestOnTriggerCharacters: true,
+                        quickSuggestions: {
+                            other: true,
+                            comments: false,
+                            strings: false
+                        },
+                        parameterHints: {
+                            enabled: true
+                        },
+                        hover: {
+                            enabled: true
+                        }
+                    });
+
+                    // Store editor reference
+                    appState.monacoEditor = editor;
+                    appState.scriptFiles = appState.scriptFiles || new Map();
+                    appState.scriptFiles.set('main', editor.getValue());
+                });
+            }
+
+            // Initialize manifest editor
+            const manifestEditor = document.getElementById('manifestEditor');
+            if (manifestEditor && !manifestEditor.value) {
+                manifestEditor.value = JSON.stringify({
+                    "format_version": 2,
+                    "header": {
+                        "description": "Custom Addon Script",
+                        "name": "Custom Addon",
+                        "uuid": "12345678-1234-1234-1234-123456789012",
+                        "version": [1, 0, 0],
+                        "min_engine_version": [1, 19, 0]
+                    },
+                    "modules": [
+                        {
+                            "description": "Script Module",
+                            "language": "javascript",
+                            "type": "script",
+                            "uuid": "87654321-4321-4321-4321-210987654321",
+                            "version": [1, 0, 0],
+                            "entry": "scripts/main.js"
+                        }
+                    ],
+                    "dependencies": [
+                        {
+                            "module_name": "@minecraft/server",
+                            "version": "1.4.0"
+                        }
+                    ]
+                }, null, 2);
+            }
+
+            // Initialize buttons
+            const runBtn = document.getElementById('runScript');
+            const validateBtn = document.getElementById('validateScript');
+            const downloadBtn = document.getElementById('downloadScript');
+
+            runBtn?.addEventListener('click', runScript);
+            validateBtn?.addEventListener('click', validateScript);
+            downloadBtn?.addEventListener('click', downloadScript);
+        }
+
+        function runScript() {
+            // Script execution logic would go here
+            alert('Script execution is not available in this demo environment.');
+        }
+
+        function validateScript() {
+            // Script validation logic
+            if (appState.monacoEditor) {
+                const code = appState.monacoEditor.getValue();
+                // Basic validation
+                if (code.trim().length === 0) {
+                    alert('Script is empty!');
+                    return;
+                }
+                alert('Script validation passed!');
+            }
+        }
+
+        function downloadScript() {
+            if (appState.monacoEditor) {
+                const code = appState.monacoEditor.getValue();
+                const blob = new Blob([code], { type: 'text/javascript' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'main.js';
+                a.click();
+                URL.revokeObjectURL(url);
+            }
+        }
+
+        // Setup Minecraft Script API definitions for autocomplete
+        function setupMinecraftAPIDefinitions() {
+            // Minecraft Server API Type Definitions
+            const minecraftServerDefs = `
+            declare module "@minecraft/server" {
+                export interface World {
+                    afterEvents: WorldAfterEvents;
+                    beforeEvents: WorldBeforeEvents;
+                    getPlayers(options?: EntityQueryOptions): Player[];
+                    getAllPlayers(): Player[];
+                    getDimension(dimensionId: string): Dimension;
+                    getEntity(id: string): Entity | undefined;
+                    sendMessage(message: string): void;
+                    playMusic(trackId: string, musicOptions?: MusicOptions): void;
+                    playSound(soundId: string, location: Vector3, soundOptions?: WorldSoundOptions): void;
+                    queueMusic(trackId: string, musicOptions?: MusicOptions): void;
+                    stopMusic(): void;
+                    broadcastClientMessage(id: string, value: string): void;
+                    getAbsoluteTime(): number;
+                    getTimeOfDay(): number;
+                    setTimeOfDay(timeOfDay: number): void;
+                    getDay(): number;
+                    setDefaultSpawnLocation(spawnLocation: Vector3): void;
+                    getDefaultSpawnLocation(): Vector3;
+                    getDynamicProperty(identifier: string): boolean | number | string | Vector3 | undefined;
+                    setDynamicProperty(identifier: string, value?: boolean | number | string | Vector3): void;
+                }
+
+                export interface Player extends Entity {
+                    name: string;
+                    isOp(): boolean;
+                    playMusic(trackId: string, musicOptions?: MusicOptions): void;
+                    playSound(soundId: string, soundOptions?: PlayerSoundOptions): void;
+                    queueMusic(trackId: string, musicOptions?: MusicOptions): void;
+                    stopMusic(): void;
+                    sendMessage(message: (RawMessage | string)[] | RawMessage | string): void;
+                    getSpawnLocation(): DimensionLocation | undefined;
+                    setSpawnLocation(spawnLocation?: DimensionLocation): void;
+                    getTotalXp(): number;
+                    addExperience(amount: number): number;
+                    addLevels(amount: number): number;
+                    resetLevel(): void;
+                    onScreenDisplay: ScreenDisplay;
+                    selectedSlot: number;
+                    camera: Camera;
+                    inputPermissions: PlayerInputPermissions;
+                    postClientMessage(id: string, value: string): void;
+                    getGameMode(): GameMode;
+                    setGameMode(gameMode?: GameMode): void;
+                    isFlying: boolean;
+                    isGliding: boolean;
+                    isJumping: boolean;
+                    isSleeping: boolean;
+                    isSprinting: boolean;
+                    isSwimming: boolean;
+                    isClimbing: boolean;
+                    isOnGround: boolean;
+                }
+
+                export interface Entity {
+                    id: string;
+                    typeId: string;
+                    dimension: Dimension;
+                    location: Vector3;
+                    velocity: Vector3;
+                    viewDirection: Vector3;
+                    rotation: Vector2;
+                    nameTag: string;
+                    scoreboardIdentity?: ScoreboardIdentity;
+                    target?: Entity;
+                    isSneaking: boolean;
+                    fallDistance: number;
+                    isInWater: boolean;
+                    isOnGround: boolean;
+                    isClimbing: boolean;
+                    isFalling: boolean;
+                    isInLava: boolean;
+                    isValid: boolean;
+                    lifetimeState: EntityLifetimeState;
+                    addEffect(effectType: EffectType | string, duration: number, options?: EntityEffectOptions): Effect | undefined;
+                    addTag(tag: string): boolean;
+                    applyDamage(amount: number, options?: EntityApplyDamageOptions): boolean;
+                    applyImpulse(vector: Vector3): void;
+                    applyKnockback(directionX: number, directionZ: number, horizontalStrength: number, verticalStrength: number): void;
+                    clearVelocity(): void;
+                    extinguishFire(useEffects?: boolean): boolean;
+                    getBlockFromViewDirection(options?: BlockRaycastOptions): BlockRaycastHit | undefined;
+                    getComponent<T extends keyof EntityComponentTypeMap>(componentId: T): EntityComponentTypeMap[T] | undefined;
+                    getDynamicProperty(identifier: string): boolean | number | string | Vector3 | undefined;
+                    getEffect(effectType: EffectType | string): Effect | undefined;
+                    getEffects(): Effect[];
+                    getEntitiesFromViewDirection(options?: EntityRaycastOptions): EntityRaycastHit[];
+                    getHeadLocation(): Vector3;
+                    getTags(): string[];
+                    getVelocity(): Vector3;
+                    getViewDirection(): Vector3;
+                    hasComponent(componentId: string): boolean;
+                    hasTag(tag: string): boolean;
+                    isValid(): boolean;
+                    kill(): boolean;
+                    matches(options: EntityQueryOptions): boolean;
+                    playAnimation(animationName: string, options?: PlayAnimationOptions): void;
+                    remove(): void;
+                    removeEffect(effectType: EffectType | string): boolean;
+                    removeTag(tag: string): boolean;
+                    runCommand(commandString: string): CommandResult;
+                    runCommandAsync(commandString: string): Promise<CommandResult>;
+                    setDynamicProperty(identifier: string, value?: boolean | number | string | Vector3): void;
+                    setOnFire(seconds: number, useEffects?: boolean): boolean;
+                    setRotation(rotation: Vector2): void;
+                    teleport(location: Vector3, teleportOptions?: TeleportOptions): void;
+                    triggerEvent(eventName: string): void;
+                    tryTeleport(location: Vector3, teleportOptions?: TeleportOptions): boolean;
+                }
+
+                export interface Block {
+                    dimension: Dimension;
+                    location: Vector3;
+                    permutation: BlockPermutation;
+                    type: BlockType;
+                    typeId: string;
+                    x: number;
+                    y: number;
+                    z: number;
+                    isWaterlogged: boolean;
+                    isValid(): boolean;
+                    canPlace(blockToPlace: BlockPermutation | BlockType | string, faceToPlaceOn?: Direction): boolean;
+                    getComponent<T extends keyof BlockComponentTypeMap>(componentId: T): BlockComponentTypeMap[T] | undefined;
+                    getItemStack(amount?: number, withData?: boolean): ItemStack | undefined;
+                    getRedstonePower(): number | undefined;
+                    getTags(): string[];
+                    hasTag(tag: string): boolean;
+                    isAir(): boolean;
+                    isLiquid(): boolean;
+                    isSolid(): boolean;
+                    matches(blockName: string, states?: Record<string, boolean | number | string>): boolean;
+                    setPermutation(permutation: BlockPermutation): void;
+                    setType(blockType: BlockType | string): void;
+                    setWaterlogged(setWaterlogged: boolean): void;
+                    trySetPermutation(permutation: BlockPermutation): boolean;
+                }
+
+                export interface System {
+                    afterEvents: SystemAfterEvents;
+                    beforeEvents: SystemBeforeEvents;
+                    currentTick: number;
+                    run(callback: () => void): void;
+                    runInterval(callback: () => void, tickInterval?: number): number;
+                    runTimeout(callback: () => void, tickDelay?: number): number;
+                    clearRun(runId: number): void;
+                    waitTicks(ticks: number): Promise<void>;
+                }
+
+                export const world: World;
+                export const system: System;
+            }
+            
+            declare module "@minecraft/server-ui" {
+                export class ActionFormData {
+                    constructor();
+                    body(bodyText: RawMessage | string): ActionFormData;
+                    button(text: RawMessage | string, iconPath?: string): ActionFormData;
+                    title(titleText: RawMessage | string): ActionFormData;
+                    show(player: Player): Promise<ActionFormResponse>;
+                }
+
+                export class ModalFormData {
+                    constructor();
+                    dropdown(label: RawMessage | string, options: (RawMessage | string)[], defaultValueIndex?: number): ModalFormData;
+                    icon(iconPath: string): ModalFormData;
+                    slider(label: RawMessage | string, minimumValue: number, maximumValue: number, valueStep: number, defaultValue?: number): ModalFormData;
+                    submitButton(submitButtonText: RawMessage | string): ModalFormData;
+                    textField(label: RawMessage | string, placeholderText: RawMessage | string, defaultValue?: string): ModalFormData;
+                    title(titleText: RawMessage | string): ModalFormData;
+                    toggle(label: RawMessage | string, defaultValue?: boolean): ModalFormData;
+                    show(player: Player): Promise<ModalFormResponse>;
+                }
+
+                export class MessageFormData {
+                    constructor();
+                    body(bodyText: RawMessage | string): MessageFormData;
+                    button1(text: RawMessage | string): MessageFormData;
+                    button2(text: RawMessage | string): MessageFormData;
+                    title(titleText: RawMessage | string): MessageFormData;
+                    show(player: Player): Promise<MessageFormResponse>;
+                }
+            }`;
+
+            // Add type definitions to Monaco
+            monaco.languages.typescript.javascriptDefaults.addExtraLib(
+                minecraftServerDefs,
+                'file:///minecraft-server.d.ts'
+            );
+
+            // Configure IntelliSense options
+            monaco.languages.typescript.javascriptDefaults.setCompilerOptions({
+                target: monaco.languages.typescript.ScriptTarget.ES2020,
+                allowNonTsExtensions: true,
+                moduleResolution: monaco.languages.typescript.ModuleResolutionKind.NodeJs,
+                module: monaco.languages.typescript.ModuleKind.CommonJS,
+                noEmit: true,
+                esModuleInterop: true,
+                allowJs: true,
+                typeRoots: ["node_modules/@types"]
+            });
+        }
+
+        // Create new file functionality
+        function createNewFile() {
+            const fileName = prompt('Enter file name (e.g., "utilities.js", "config.json"):');
+            if (!fileName) return;
+
+            // Remove any extension and clean the name
+            const cleanName = fileName.replace(/\.[^/.]+$/, "").replace(/[^a-zA-Z0-9_-]/g, '');
+            if (!cleanName) {
+                alert('Please enter a valid file name');
+                return;
+            }
+
+            // Check if file already exists
+            if (appState.scriptFiles && appState.scriptFiles.has(cleanName)) {
+                alert('File already exists!');
+                return;
+            }
+
+            // Create new tab
+            const tabList = document.querySelector('#script-studio-section .tab-list');
+            const newTabButton = tabList.querySelector('[data-tab="new"]');
+            
+            // Create the new tab button
+            const newTab = document.createElement('button');
+            newTab.className = 'tab-button';
+            newTab.setAttribute('data-tab', cleanName);
+            newTab.textContent = fileName;
+            
+            // Add close button to tab
+            const closeBtn = document.createElement('span');
+            closeBtn.innerHTML = ' ×';
+            closeBtn.style.marginLeft = '8px';
+            closeBtn.style.cursor = 'pointer';
+            closeBtn.style.fontWeight = 'bold';
+            closeBtn.onclick = (e) => {
+                e.stopPropagation();
+                removeScriptFile(cleanName);
+            };
+            newTab.appendChild(closeBtn);
+
+            // Insert before the "New File" tab
+            tabList.insertBefore(newTab, newTabButton);
+
+            // Create new tab content
+            const tabContent = document.createElement('div');
+            tabContent.className = 'tab-content';
+            tabContent.id = 'tab-' + cleanName;
+
+            let defaultContent = '';
+            if (fileName.endsWith('.js')) {
+                defaultContent = `// ${fileName}
+import { world, system } from "@minecraft/server";
+
+// Your ${cleanName} code here
+console.log("${fileName} loaded");
+`;
+            } else if (fileName.endsWith('.json')) {
+                defaultContent = JSON.stringify({
+                    "description": `${fileName} configuration`,
+                    "created": new Date().toISOString()
+                }, null, 2);
+            } else {
+                defaultContent = `// ${fileName}
+// Custom file content
+`;
+            }
+
+            // Create editor container for this file
+            const editorContainer = document.createElement('div');
+            editorContainer.className = 'monaco-container';
+            editorContainer.id = 'editor-' + cleanName;
+            editorContainer.style.height = '500px';
+            
+            tabContent.appendChild(editorContainer);
+
+            // Add tab content to the tabs container
+            const tabsContainer = document.querySelector('#script-studio-section .tabs');
+            tabsContainer.appendChild(tabContent);
+
+            // Store file content
+            if (!appState.scriptFiles) appState.scriptFiles = new Map();
+            appState.scriptFiles.set(cleanName, defaultContent);
+
+            // Switch to new tab
+            document.querySelectorAll('#script-studio-section .tab-button').forEach(t => t.classList.remove('active'));
+            newTab.classList.add('active');
+            
+            document.querySelectorAll('#script-studio-section .tab-content').forEach(content => content.classList.remove('active'));
+            tabContent.classList.add('active');
+
+            // Create Monaco editor for this file
+            if (typeof monaco !== 'undefined') {
+                const language = fileName.endsWith('.json') ? 'json' : 'javascript';
+                const editor = monaco.editor.create(editorContainer, {
+                    value: defaultContent,
+                    language: language,
+                    theme: 'vs-dark',
+                    automaticLayout: true,
+                    minimap: { enabled: false },
+                    suggestOnTriggerCharacters: true,
+                    quickSuggestions: {
+                        other: true,
+                        comments: false,
+                        strings: false
+                    }
+                });
+
+                // Store editor reference
+                if (!appState.scriptEditors) appState.scriptEditors = new Map();
+                appState.scriptEditors.set(cleanName, editor);
+
+                // Update content when editor changes
+                editor.onDidChangeModelContent(() => {
+                    appState.scriptFiles.set(cleanName, editor.getValue());
+                });
+            }
+
+            // Add click handler to the new tab
+            newTab.addEventListener('click', (e) => {
+                e.preventDefault();
+                if (e.target === closeBtn) return; // Don't switch tabs when closing
+                
+                document.querySelectorAll('#script-studio-section .tab-button').forEach(t => t.classList.remove('active'));
+                newTab.classList.add('active');
+                
+                document.querySelectorAll('#script-studio-section .tab-content').forEach(content => content.classList.remove('active'));
+                tabContent.classList.add('active');
+
+                // Refresh editor layout
+                const editor = appState.scriptEditors?.get(cleanName);
+                if (editor) {
+                    setTimeout(() => editor.layout(), 100);
+                }
+            });
+        }
+
+        // Remove script file
+        function removeScriptFile(fileName) {
+            if (confirm(`Are you sure you want to delete ${fileName}?`)) {
+                // Remove from storage
+                if (appState.scriptFiles) appState.scriptFiles.delete(fileName);
+                if (appState.scriptEditors) {
+                    const editor = appState.scriptEditors.get(fileName);
+                    if (editor) {
+                        editor.dispose();
+                        appState.scriptEditors.delete(fileName);
+                    }
+                }
+
+                // Remove tab and content
+                const tab = document.querySelector(`[data-tab="${fileName}"]`);
+                const content = document.getElementById(`tab-${fileName}`);
+                
+                if (tab) tab.remove();
+                if (content) content.remove();
+
+                // Switch to main tab if this was active
+                if (tab && tab.classList.contains('active')) {
+                    const mainTab = document.querySelector('[data-tab="main"]');
+                    const mainContent = document.getElementById('tab-main');
+                    
+                    if (mainTab && mainContent) {
+                        mainTab.classList.add('active');
+                        mainContent.classList.add('active');
+                    }
+                }
+            }
+        }
+
+        // External Tools
+        function initExternalTools() {
+            // Set up tab switching for external tools
+            const externalToolTabs = document.querySelectorAll('#external-tools-section .tab-button');
+            externalToolTabs.forEach(tab => {
+                tab.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const toolName = tab.getAttribute('data-tab');
+                    
+                    // Remove active class from all tabs
+                    externalToolTabs.forEach(t => t.classList.remove('active'));
+                    // Add active class to clicked tab
+                    tab.classList.add('active');
+                    
+                    // Hide all tab contents
+                    const allTabContents = document.querySelectorAll('#external-tools-section .tab-content');
+                    allTabContents.forEach(content => content.classList.remove('active'));
+                    
+                    // Show selected tab content
+                    const selectedTabContent = document.getElementById('tab-' + toolName);
+                    if (selectedTabContent) {
+                        selectedTabContent.classList.add('active');
+                        // Load the external tool if not already loaded
+                        loadExternalTool(toolName);
+                    }
+                });
+            });
+            
+            // Load the first tool by default
+            loadExternalTool('blockbench');
+        }
+
+        function loadExternalTool(toolName) {
+            const tools = {
+                'blockbench': 'https://web.blockbench.net/',
+                'bridge-core': 'https://editor.bridge-core.app/',
+                'snowstorm': 'https://snowstorm.app/',
+                'pixilart': 'https://www.pixilart.com/draw',
+                'dialogue-editor': 'https://mcbe-essentials.github.io/dialogue-editor',
+                'loot-table': 'https://mcbe-essentials.github.io/structure-editor/loot-tabler',
+                'structure-editor': 'https://mcbe-essentials.github.io/structure-editor'
+            };
+
+            const containerIds = {
+                'blockbench': 'blockbench-container',
+                'bridge-core': 'bridge-container',
+                'snowstorm': 'snowstorm-container',
+                'pixilart': 'pixilart-container',
+                'dialogue-editor': 'dialogue-container',
+                'loot-table': 'loot-table-container',
+                'structure-editor': 'structure-container'
+            };
+
+            const container = document.getElementById(containerIds[toolName]);
+            if (!container || tools[toolName] === undefined) return;
+
+            // Check if iframe already exists
+            if (container.querySelector('iframe')) return;
+
+            // Create iframe
+            const iframe = document.createElement('iframe');
+            iframe.src = tools[toolName];
+            iframe.style.width = '100%';
+            iframe.style.height = '100%';
+            iframe.style.border = 'none';
+
+            // Hide loading indicator
+            const loading = container.querySelector('.iframe-loading');
+            if (loading) {
+                loading.style.display = 'none';
+            }
+
+            container.appendChild(iframe);
+        }
+
+        // Addon Packager
+        function initAddonPackager() {
+            const packageBtn = document.getElementById('packageAddon');
+            const previewBtn = document.getElementById('previewAddon');
+
+            packageBtn?.addEventListener('click', packageAddon);
+            previewBtn?.addEventListener('click', previewAddon);
+
+            updateAddonContents();
+        }
+
+        function updateAddonContents() {
+            const container = document.getElementById('addonContents');
+            if (!container) return;
+
+            const files = [];
+            if (appState.entityData && Object.keys(appState.entityData).length > 0) {
+                files.push('Entity: ' + (appState.entityData.minecraft?.entity?.description?.identifier || 'custom entity'));
+            }
+            if (appState.blockData && Object.keys(appState.blockData).length > 0) {
+                files.push('Block: ' + (appState.blockData.minecraft?.block?.description?.identifier || 'custom block'));
+            }
+            if (appState.itemData && Object.keys(appState.itemData).length > 0) {
+                files.push('Item: ' + (appState.itemData.minecraft?.item?.description?.identifier || 'custom item'));
+            }
+            if (appState.recipeData && Object.keys(appState.recipeData).length > 0) {
+                files.push('Recipe: custom recipe');
+            }
+
+            if (files.length === 0) {
+                container.innerHTML = '<p class="text-muted">No files added yet. Use the builders to create content.</p>';
+            } else {
+                container.innerHTML = '<ul>' + files.map(file => '<li>' + file + '</li>').join('') + '</ul>';
+            }
+        }
+
+        function packageAddon() {
+            const addonName = document.getElementById('addonName')?.value || 'My Custom Addon';
+            
+            // This would use JSZip to create a proper addon package
+            if (typeof JSZip !== 'undefined') {
+                const zip = new JSZip();
+                
+                // Add manifest
+                const manifest = {
+                    "format_version": 2,
+                    "header": {
+                        "description": document.getElementById('addonDescription')?.value || "Custom addon",
+                        "name": addonName,
+                        "uuid": generateUUID(),
+                        "version": [1, 0, 0],
+                        "min_engine_version": [1, 19, 0]
+                    },
+                    "modules": [
+                        {
+                            "description": "Data Module",
+                            "type": "data",
+                            "uuid": generateUUID(),
+                            "version": [1, 0, 0]
+                        }
+                    ]
+                };
+                
+                zip.file("manifest.json", JSON.stringify(manifest, null, 2));
+                
+                // Add created files
+                if (appState.entityData && Object.keys(appState.entityData).length > 0) {
+                    const entityId = appState.entityData.minecraft?.entity?.description?.identifier || 'custom_entity';
+                    zip.file(`entities/${entityId.split(':')[1]}.json`, JSON.stringify(appState.entityData, null, 2));
+                }
+                
+                // Generate and download
+                zip.generateAsync({type:"blob"}).then(function(content) {
+                    const url = URL.createObjectURL(content);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = addonName.replace(/[^a-zA-Z0-9]/g, '_') + '.mcaddon';
+                    a.click();
+                    URL.revokeObjectURL(url);
+                });
+            } else {
+                alert('Packaging functionality requires JSZip library.');
+            }
+        }
+
+        function previewAddon() {
+            alert('Addon preview functionality would show the complete file structure here.');
+        }
+
+        function generateUUID() {
+            return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                const r = Math.random() * 16 | 0;
+                const v = c == 'x' ? r : (r & 0x3 | 0x8);
+                return v.toString(16);
+            });
+        }
+
+        // Initialize Application
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Minecraft Creator Suite loaded successfully!');
+            
+            // Initialize all systems
+            initNavigation();
+            initTabSystem();
+            
+            // Initialize default section
+            navigateToSection('welcome');
+            
+            // Add input event listeners for real-time updates
+            document.addEventListener('input', function(e) {
+                const currentSection = appState.currentSection;
+                
+                if (currentSection === 'builder-entity' && e.target.closest('#builder-entity-section')) {
+                    generateEntityJSON();
+                } else if (currentSection === 'builder-block' && e.target.closest('#builder-block-section')) {
+                    generateBlockJSON();
+                } else if (currentSection === 'builder-item' && e.target.closest('#builder-item-section')) {
+                    generateItemJSON();
+                } else if (currentSection === 'builder-recipe' && e.target.closest('#builder-recipe-section')) {
+                    generateRecipeJSON();
+                } else if (currentSection === 'addon-packager' && e.target.closest('#addon-packager-section')) {
+                    updateAddonContents();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
